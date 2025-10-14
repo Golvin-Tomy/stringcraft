@@ -1,56 +1,83 @@
-
-
 import React from "react";
 import { Link } from "react-router-dom";
-import { FaFacebookF, FaTwitter, FaInstagram, FaYoutube } from "react-icons/fa";
+import {
+  FaFacebookF,
+  FaTwitter,
+  FaInstagram,
+  FaYoutube,
+} from "react-icons/fa";
 
 const Footer = () => {
   return (
-    <footer className="bg-gray-800 text-gray-200 mt-12">
-      <div className="container mx-auto px-4 py-10 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
-        {/* About / Contact */}
+    <footer className="bg-black text-gray-300">
+      <div className="container mx-auto px-6 py-12 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-10">
+        {/* Brand & Contact */}
         <div>
-          <h3 className="text-lg font-bold mb-3">StringCraft</h3>
-          <p>Handcrafted guitars for all musicians.</p>
-          <p className="mt-2">Email: support@stringcraft.com</p>
-          <p>Phone: +91 12345 67890</p>
-          <div className="flex space-x-3 mt-3">
-            <a href="#" aria-label="Facebook" className="hover:text-indigo-500">
-              <FaFacebookF />
+          <h2 className="text-2xl italic font-semibold text-white mb-3">
+            StringCraft
+          </h2>
+          <p className="text-sm leading-relaxed">
+            Handcrafted guitars built with passion and precision for every
+            musician.
+          </p>
+          <p className="mt-3 text-sm">📧 support@stringcraft.com</p>
+          <p className="text-sm">📞 +91 12345 67890</p>
+
+          <div className="flex space-x-4 mt-4">
+            <a
+              href="#"
+              aria-label="Facebook"
+              className="hover:text-white transition-transform transform hover:scale-110"
+            >
+              <FaFacebookF size={18} />
             </a>
-            <a href="#" aria-label="Twitter" className="hover:text-indigo-500">
-              <FaTwitter />
+            <a
+              href="#"
+              aria-label="Twitter"
+              className="hover:text-white transition-transform transform hover:scale-110"
+            >
+              <FaTwitter size={18} />
             </a>
-            <a href="#" aria-label="Instagram" className="hover:text-indigo-500">
-              <FaInstagram />
+            <a
+              href="#"
+              aria-label="Instagram"
+              className="hover:text-white transition-transform transform hover:scale-110"
+            >
+              <FaInstagram size={18} />
             </a>
-            <a href="#" aria-label="YouTube" className="hover:text-indigo-500">
-              <FaYoutube />
+            <a
+              href="#"
+              aria-label="YouTube"
+              className="hover:text-white transition-transform transform hover:scale-110"
+            >
+              <FaYoutube size={18} />
             </a>
           </div>
         </div>
 
         {/* Quick Links */}
         <div>
-          <h3 className="text-lg font-bold mb-3">Quick Links</h3>
-          <ul>
+          <h3 className="text-lg font-semibold text-white mb-3">
+            Quick Links
+          </h3>
+          <ul className="space-y-2 text-sm">
             <li>
-              <Link to="/" className="hover:text-indigo-500">
+              <Link to="/" className="hover:text-white transition-colors">
                 Home
               </Link>
             </li>
             <li>
-              <Link to="/products" className="hover:text-indigo-500">
+              <Link to="/products" className="hover:text-white transition-colors">
                 Products
               </Link>
             </li>
             <li>
-              <Link to="/cart" className="hover:text-indigo-500">
+              <Link to="/cart" className="hover:text-white transition-colors">
                 Cart
               </Link>
             </li>
             <li>
-              <Link to="/account" className="hover:text-indigo-500">
+              <Link to="/account" className="hover:text-white transition-colors">
                 Account
               </Link>
             </li>
@@ -59,21 +86,30 @@ const Footer = () => {
 
         {/* Categories */}
         <div>
-          <h3 className="text-lg font-bold mb-3">Categories</h3>
-          <ul>
+          <h3 className="text-lg font-semibold text-white mb-3">Categories</h3>
+          <ul className="space-y-2 text-sm">
             <li>
-              <Link to="/products?category=electric" className="hover:text-indigo-500">
-                Electric
+              <Link
+                to="/products?category=electric"
+                className="hover:text-white transition-colors"
+              >
+                Electric Guitars
               </Link>
             </li>
             <li>
-              <Link to="/products?category=acoustic" className="hover:text-indigo-500">
-                Acoustic
+              <Link
+                to="/products?category=acoustic"
+                className="hover:text-white transition-colors"
+              >
+                Acoustic Guitars
               </Link>
             </li>
             <li>
-              <Link to="/products?category=ukulele" className="hover:text-indigo-500">
-                Ukulele
+              <Link
+                to="/products?category=ukulele"
+                className="hover:text-white transition-colors"
+              >
+                Ukuleles
               </Link>
             </li>
           </ul>
@@ -81,25 +117,25 @@ const Footer = () => {
 
         {/* Support */}
         <div>
-          <h3 className="text-lg font-bold mb-3">Support</h3>
-          <ul>
+          <h3 className="text-lg font-semibold text-white mb-3">Support</h3>
+          <ul className="space-y-2 text-sm">
             <li>
-              <Link to="/faq" className="hover:text-indigo-500">
+              <Link to="/faq" className="hover:text-white transition-colors">
                 FAQ
               </Link>
             </li>
             <li>
-              <Link to="/contact" className="hover:text-indigo-500">
+              <Link to="/contact" className="hover:text-white transition-colors">
                 Contact Us
               </Link>
             </li>
             <li>
-              <Link to="/terms" className="hover:text-indigo-500">
+              <Link to="/terms" className="hover:text-white transition-colors">
                 Terms & Conditions
               </Link>
             </li>
             <li>
-              <Link to="/privacy" className="hover:text-indigo-500">
+              <Link to="/privacy" className="hover:text-white transition-colors">
                 Privacy Policy
               </Link>
             </li>
@@ -107,9 +143,18 @@ const Footer = () => {
         </div>
       </div>
 
-      <div className="border-t border-gray-700 mt-6">
-        <div className="container mx-auto px-4 py-4 text-center text-sm">
-          &copy; {new Date().getFullYear()} StringCraft. All rights reserved.
+      {/* Bottom Bar */}
+      <div className="border-t border-gray-700 mt-8">
+        <div className="container mx-auto px-6 py-4 flex flex-col sm:flex-row justify-between items-center text-sm text-gray-400">
+          <p>
+            &copy; {new Date().getFullYear()}{" "}
+            <span className="text-white font-medium">StringCraft</span>. All
+            rights reserved.
+          </p>
+          <p className="mt-2 sm:mt-0">
+            Made with ❤️ by{" "}
+            <span className="text-white font-semibold">StringCraft Team</span>
+          </p>
         </div>
       </div>
     </footer>
