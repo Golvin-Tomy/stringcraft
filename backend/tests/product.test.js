@@ -1,6 +1,6 @@
 import request from "supertest";
 import app from "../server.js";
-import User from "../models/User.js";
+import User from "../models/UserModel.js";
 import Product from "../models/productModel.js";
 import jwt from "jsonwebtoken";
 

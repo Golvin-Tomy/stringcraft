@@ -1,35 +1,36 @@
-
-
 import asyncHandler from "express-async-handler";
-import User from "../models/User.js";
+import User from "../models/UserModel.js";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
 import nodemailer from "nodemailer";
 
+const generateToken = (res, userId) => {
+  const token = jwt.sign({ id: userId }, process.env.JWT_SECRET, {
+    expiresIn: "30d",
+  });
 
-const generateToken = (user) => {
-  return jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRES_IN || "7d"
+  res.cookie("jwt", token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV !== "development",
+    sameSite: "strict",
+    maxAge: 30 * 24 * 60 * 60 * 1000,
   });
 };
 
-
-export const registerUser = asyncHandler(async (req, res) => {
+const registerUser = asyncHandler(async (req, res) => {
   const { name, email, password, phone } = req.body;
 
-  // Check if user exists
   const userExists = await User.findOne({ email });
   if (userExists) {
     res.status(400);
     throw new Error("User already exists with this email");
   }
 
-  // Create user
   const user = await User.create({
     name,
     email,
     password,
-    phone
+    phone,
   });
 
   if (user) {
@@ -40,8 +41,8 @@ export const registerUser = asyncHandler(async (req, res) => {
         name: user.name,
         email: user.email,
         role: user.role,
-        token: generateToken(user)
-      }
+        token: generateToken(user),
+      },
     });
   } else {
     res.status(400);
@@ -49,8 +50,7 @@ export const registerUser = asyncHandler(async (req, res) => {
   }
 });
 
-
-export const loginUser = asyncHandler(async (req, res) => {
+const loginUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
 
   const user = await User.findOne({ email });
@@ -62,8 +62,8 @@ export const loginUser = asyncHandler(async (req, res) => {
         name: user.name,
         email: user.email,
         role: user.role,
-        token: generateToken(user)
-      }
+        token: generateToken(user),
+      },
     });
   } else {
     res.status(401);
@@ -71,15 +71,11 @@ export const loginUser = asyncHandler(async (req, res) => {
   }
 });
 
-
-export const logoutUser = asyncHandler(async (req, res) => {
-  // If using cookies for refresh token, clear it here
+const logoutUser = asyncHandler(async (req, res) => {
   res.json({ success: true, message: "User logged out" });
 });
 
-
 export const refreshToken = asyncHandler(async (req, res) => {
-  // Example: get refresh token from cookies
   const refreshToken = req.cookies?.refreshToken;
 
   if (!refreshToken) {
@@ -87,7 +83,6 @@ export const refreshToken = asyncHandler(async (req, res) => {
     throw new Error("No refresh token provided");
   }
 
-  // Verify token
   jwt.verify(refreshToken, process.env.JWT_SECRET, (err, decoded) => {
     if (err) {
       res.status(401);
@@ -104,8 +99,7 @@ export const refreshToken = asyncHandler(async (req, res) => {
   });
 });
 
-
-export const forgotPassword = asyncHandler(async (req, res) => {
+const forgotPassword = asyncHandler(async (req, res) => {
   const { email } = req.body;
 
   const user = await User.findOne({ email });
@@ -114,16 +108,16 @@ export const forgotPassword = asyncHandler(async (req, res) => {
     throw new Error("User not found with this email");
   }
 
-  // Generate reset token (random)
   const resetToken = crypto.randomBytes(32).toString("hex");
-  const resetTokenHash = crypto.createHash("sha256").update(resetToken).digest("hex");
+  const resetTokenHash = crypto
+    .createHash("sha256")
+    .update(resetToken)
+    .digest("hex");
 
-  // Save token in user model (you can add resetToken & resetTokenExpire fields)
   user.resetPasswordToken = resetTokenHash;
-  user.resetPasswordExpire = Date.now() + 60 * 60 * 1000; // 1 hour
+  user.resetPasswordExpire = Date.now() + 60 * 60 * 1000;
   await user.save();
 
-  // Prepare email
   const resetUrl = `${process.env.CLIENT_URL}/reset-password/${resetToken}`;
   const message = `You requested a password reset. Click this link: ${resetUrl}`;
 
@@ -133,15 +127,15 @@ export const forgotPassword = asyncHandler(async (req, res) => {
       port: process.env.SMTP_PORT,
       auth: {
         user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS
-      }
+        pass: process.env.SMTP_PASS,
+      },
     });
 
     await transporter.sendMail({
       from: `"StringCraft" <${process.env.SMTP_USER}>`,
       to: user.email,
       subject: "Password Reset Request",
-      text: message
+      text: message,
     });
 
     res.json({ success: true, message: "Email sent for password reset" });
@@ -155,13 +149,15 @@ export const forgotPassword = asyncHandler(async (req, res) => {
   }
 });
 
-
-export const resetPassword = asyncHandler(async (req, res) => {
-  const resetTokenHash = crypto.createHash("sha256").update(req.params.token).digest("hex");
+const resetPassword = asyncHandler(async (req, res) => {
+  const resetTokenHash = crypto
+    .createHash("sha256")
+    .update(req.params.token)
+    .digest("hex");
 
   const user = await User.findOne({
     resetPasswordToken: resetTokenHash,
-    resetPasswordExpire: { $gt: Date.now() }
+    resetPasswordExpire: { $gt: Date.now() },
   });
 
   if (!user) {
@@ -176,3 +172,55 @@ export const resetPassword = asyncHandler(async (req, res) => {
 
   res.json({ success: true, message: "Password reset successful" });
 });
+
+const getUserProfile = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.user._id);
+
+  if (user) {
+    res.json({
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      isAdmin: user.isAdmin,
+    });
+  } else {
+    res.status(404);
+    throw new Error("User not found");
+  }
+});
+
+const updateUserProfile = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.user._id);
+
+  if (user) {
+    user.name = req.body.name || user.name;
+    user.email = req.body.email || user.email;
+
+    if (req.body.password) {
+      user.password = req.body.password;
+    }
+
+    const updatedUser = await user.save();
+
+    res.json({
+      _id: updatedUser._id,
+      name: updatedUser.name,
+      email: updatedUser.email,
+      isAdmin: updatedUser.isAdmin,
+    });
+  } else {
+    res.status(404);
+    throw new Error("User not found");
+  }
+});
+
+export {
+  registerUser,
+  loginUser,
+  logoutUser,
+  forgotPassword,
+  resetPassword,
+  getUserProfile,
+  updateUserProfile,
+  generateToken,
+};

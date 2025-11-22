@@ -1,9 +1,7 @@
-
-
-import React, { useState } from "react";
+import { useState } from "react";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
-import { useToast } from "../../components/Toast.jsx"; // optional toast notifications
+import { useToast } from "../../components/Toast.jsx";
 
 const SignUp = () => {
   const navigate = useNavigate();
@@ -18,7 +16,8 @@ const SignUp = () => {
 
   const [loading, setLoading] = useState(false);
 
-  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+  const handleChange = (e) =>
+    setForm({ ...form, [e.target.name]: e.target.value });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -91,6 +90,20 @@ const SignUp = () => {
         >
           {loading ? "Signing up..." : "Sign Up"}
         </button>
+
+        <div className="my-4">
+          <a
+            href="http://localhost:5000/api/users/google"
+            className="flex items-center justify-center w-full px-6 py-3 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition"
+          >
+            <img
+              src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
+              alt="Google logo"
+              className="w-5 h-5 mr-3"
+            />
+            Continue with Google
+          </a>
+        </div>
       </form>
       <p className="text-sm text-gray-600 mt-4 text-center">
         Already have an account?{" "}

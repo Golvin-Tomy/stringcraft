@@ -1,9 +1,7 @@
-
-
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
-import { useToast } from "../../components/Toast.jsx"; 
+import { useToast } from "../../components/Toast.jsx";
 import { useAuth } from "../../context/AuthContext.jsx"; // or Zustand store
 
 const SignIn = () => {
@@ -14,7 +12,8 @@ const SignIn = () => {
   const [form, setForm] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
 
-  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+  const handleChange = (e) =>
+    setForm({ ...form, [e.target.name]: e.target.value });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -61,6 +60,21 @@ const SignIn = () => {
           {loading ? "Signing in..." : "Sign In"}
         </button>
       </form>
+
+      <div className="my-4">
+        <a
+          href="http://localhost:5000/api/users/google"
+          className="flex items-center justify-center w-full px-6 py-3 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition"
+        >
+          <img
+            src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
+            alt="Google logo"
+            className="w-5 h-5 mr-3"
+          />
+          Continue with Google
+        </a>
+      </div>
+
       <p className="text-sm text-gray-600 mt-4 text-center">
         Don't have an account?{" "}
         <Link to="/signup" className="text-indigo-600 hover:underline">

@@ -1,9 +1,6 @@
-
-
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-
 
 const addressSchema = mongoose.Schema(
   {
@@ -11,44 +8,47 @@ const addressSchema = mongoose.Schema(
     city: { type: String },
     state: { type: String },
     postalCode: { type: String },
-    country: { type: String }
+    country: { type: String },
   },
   { _id: false }
 );
-
 
 const userSchema = mongoose.Schema(
   {
     name: {
       type: String,
-      required: [true, "Name is required"]
+      required: [true, "Name is required"],
     },
     email: {
       type: String,
       required: [true, "Email is required"],
       unique: true,
-      lowercase: true
+      lowercase: true,
     },
     password: {
       type: String,
-      required: [true, "Password is required"],
-      minlength: 6
+      required: false,
+      minlength: 6,
+    },
+    googleId: {
+      type: String,
+      unique: true,
+      sparse: true,
     },
     phone: {
-      type: String
+      type: String,
     },
     role: {
       type: String,
       enum: ["user", "admin"],
-      default: "user"
+      default: "user",
     },
-    addresses: [addressSchema]
+    addresses: [addressSchema],
   },
   {
-    timestamps: true
+    timestamps: true,
   }
 );
-
 
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) {
@@ -60,20 +60,16 @@ userSchema.pre("save", async function (next) {
   next();
 });
 
-
 userSchema.methods.matchPassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
 
-
 userSchema.methods.generateToken = function () {
-  return jwt.sign(
-    { id: this._id, role: this.role },
-    process.env.JWT_SECRET,
-    { expiresIn: process.env.JWT_EXPIRES_IN || "7d" }
-  );
+  return jwt.sign({ id: this._id, role: this.role }, process.env.JWT_SECRET, {
+    expiresIn: process.env.JWT_EXPIRES_IN || "7d",
+  });
 };
 
-const User = mongoose.model("User", userSchema);
+const userModel = mongoose.models.User || mongoose.model("User", userSchema);
 
-export default User;
+export default userModel;

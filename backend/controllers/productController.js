@@ -1,7 +1,6 @@
 import asyncHandler from "express-async-handler";
 import Product from "../models/productModel.js";
 
-
 export const getProducts = asyncHandler(async (req, res) => {
   let {
     page = 1,
@@ -9,6 +8,7 @@ export const getProducts = asyncHandler(async (req, res) => {
     sortBy = "createdAt",
     order = "desc",
     name,
+    search,
     category,
     minPrice,
     maxPrice,
@@ -20,7 +20,9 @@ export const getProducts = asyncHandler(async (req, res) => {
 
   const query = {};
 
-  if (name) query.name = { $regex: name, $options: "i" };
+  if (name || search) {
+    query.name = { $regex: name || search, $options: "i" };
+  }
   if (category) query.category = category;
   if (minPrice || maxPrice) {
     query.price = {};
@@ -46,7 +48,6 @@ export const getProducts = asyncHandler(async (req, res) => {
   });
 });
 
-
 export const getProductById = asyncHandler(async (req, res) => {
   const product = await Product.findById(req.params.id);
   if (product) {
@@ -56,7 +57,6 @@ export const getProductById = asyncHandler(async (req, res) => {
     throw new Error("Product not found");
   }
 });
-
 
 export const createProduct = asyncHandler(async (req, res) => {
   const { name, description, price, category, stock, image } = req.body;
@@ -74,11 +74,6 @@ export const createProduct = asyncHandler(async (req, res) => {
   res.status(201).json(createdProduct);
 });
 
-/**
- * @desc Update product by ID
- * @route PUT /api/products/:id
- * @access Admin
- */
 export const updateProduct = asyncHandler(async (req, res) => {
   const { name, description, price, category, stock, image } = req.body;
   const product = await Product.findById(req.params.id);
@@ -99,11 +94,6 @@ export const updateProduct = asyncHandler(async (req, res) => {
   }
 });
 
-/**
- * @desc Delete product by ID
- * @route DELETE /api/products/:id
- * @access Admin
- */
 export const deleteProduct = asyncHandler(async (req, res) => {
   const product = await Product.findById(req.params.id);
 

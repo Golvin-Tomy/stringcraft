@@ -1,6 +1,6 @@
 import request from "supertest";
 import app from "../server.js"; // Express app
-import User from "../models/User.js";
+import User from "../models/UserModel.js";
 
 describe("Auth Routes", () => {
   const userData = { name: "Test User", email: "test@example.com", password: "password123" };

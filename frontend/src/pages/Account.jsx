@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useAuth } from "../context/AuthContext.jsx"; // or Zustand store
@@ -9,30 +8,51 @@ const Account = () => {
   const { showToast } = useToast();
 
   const [profile, setProfile] = useState({
-    name: user?.name || "",
-    email: user?.email || "",
-    phone: user?.phone || "",
+    name: "",
+    email: "",
+    phone: "",
   });
 
   const [orders, setOrders] = useState([]);
-  const [passwords, setPasswords] = useState({ current: "", newPassword: "", confirmPassword: "" });
+  const [passwords, setPasswords] = useState({
+    current: "",
+    newPassword: "",
+    confirmPassword: "",
+  });
   const [loadingProfile, setLoadingProfile] = useState(false);
   const [loadingPassword, setLoadingPassword] = useState(false);
 
   useEffect(() => {
-    const fetchOrders = async () => {
-      try {
-        const { data } = await axios.get("/api/orders/my");
-        setOrders(data.data);
-      } catch (err) {
-        console.error(err);
+    const loadUserFromCookie = async () => {
+      if (!user && document.cookie.includes("jwt")) {
+        try {
+          const { data } = await axios.get(
+            "http://localhost:5000/api/users/profile",
+            {
+              withCredentials: true,
+            }
+          );
+
+          setUser(data.data || data);
+
+          setProfile({
+            name: data.data?.name || data.name || "",
+            email: data.data?.email || data.email || "",
+            phone: data.data?.phone || data.phone || "",
+          });
+        } catch (err) {
+          console.log("No valid session");
+        }
       }
     };
-    fetchOrders();
-  }, []);
 
-  const handleProfileChange = (e) => setProfile({ ...profile, [e.target.name]: e.target.value });
-  const handlePasswordChange = (e) => setPasswords({ ...passwords, [e.target.name]: e.target.value });
+    loadUserFromCookie();
+  }, [user, setUser]);
+
+  const handleProfileChange = (e) =>
+    setProfile({ ...profile, [e.target.name]: e.target.value });
+  const handlePasswordChange = (e) =>
+    setPasswords({ ...passwords, [e.target.name]: e.target.value });
 
   const updateProfile = async (e) => {
     e.preventDefault();
@@ -42,7 +62,10 @@ const Account = () => {
       setUser(data.data);
       showToast("Profile updated successfully", "success");
     } catch (err) {
-      showToast(err.response?.data?.error || "Failed to update profile", "error");
+      showToast(
+        err.response?.data?.error || "Failed to update profile",
+        "error"
+      );
     } finally {
       setLoadingProfile(false);
     }
@@ -63,7 +86,10 @@ const Account = () => {
       showToast("Password changed successfully", "success");
       setPasswords({ current: "", newPassword: "", confirmPassword: "" });
     } catch (err) {
-      showToast(err.response?.data?.error || "Failed to change password", "error");
+      showToast(
+        err.response?.data?.error || "Failed to change password",
+        "error"
+      );
     } finally {
       setLoadingPassword(false);
     }
@@ -71,7 +97,7 @@ const Account = () => {
 
   return (
     <div className="space-y-10 max-w-5xl mx-auto py-10">
-      {/* Profile */}
+      
       <div className="bg-white border rounded-lg p-6">
         <h2 className="text-xl font-semibold mb-4">Profile</h2>
         <form className="space-y-4" onSubmit={updateProfile}>
@@ -168,10 +194,18 @@ const Account = () => {
                 {orders.map((o) => (
                   <tr key={o._id} className="hover:bg-gray-50">
                     <td className="border px-4 py-2">{o._id.slice(-6)}</td>
-                    <td className="border px-4 py-2">{new Date(o.createdAt).toLocaleDateString()}</td>
-                    <td className="border px-4 py-2">${o.totalPrice.toFixed(2)}</td>
-                    <td className="border px-4 py-2">{o.isPaid ? "Yes" : "No"}</td>
-                    <td className="border px-4 py-2">{o.isDelivered ? "Yes" : "No"}</td>
+                    <td className="border px-4 py-2">
+                      {new Date(o.createdAt).toLocaleDateString()}
+                    </td>
+                    <td className="border px-4 py-2">
+                      ${o.totalPrice.toFixed(2)}
+                    </td>
+                    <td className="border px-4 py-2">
+                      {o.isPaid ? "Yes" : "No"}
+                    </td>
+                    <td className="border px-4 py-2">
+                      {o.isDelivered ? "Yes" : "No"}
+                    </td>
                   </tr>
                 ))}
               </tbody>

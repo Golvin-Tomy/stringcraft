@@ -1,7 +1,7 @@
 
 
 import React from "react";
-import { useCart } from "../context/CartContext.jsx"; // or Zustand store
+import { useCart } from "../context/CartContext.jsx";
 import CartItem from "../components/CartItem.jsx";
 import CartSummary from "../components/CartSummary.jsx";
 import { Link, useNavigate } from "react-router-dom";

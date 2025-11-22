@@ -6,7 +6,7 @@ const CartSummary = ({ cartItems }) => {
   const navigate = useNavigate();
 
   const itemsPrice = cartItems.reduce((acc, item) => acc + item.price * item.qty, 0);
-  const taxPrice = +(itemsPrice * 0.1).toFixed(2); // 10% tax
+  const taxPrice = +(itemsPrice * 0.1).toFixed(2); 
   const shippingPrice = itemsPrice > 500 ? 0 : 25;
   const totalPrice = +(itemsPrice + taxPrice + shippingPrice).toFixed(2);
 

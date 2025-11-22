@@ -1,14 +1,21 @@
-/**
- * File: frontend/tailwind.config.js
- * Description: Tailwind CSS configuration
- */
+
 export default {
   content: [
     "./index.html",
     "./src/**/*.{js,jsx,ts,tsx}"
   ],
   theme: {
-    extend: {},
+    extend: {
+      keyframes: {
+        "slide-in": {
+          "0%": { transform: "translateY(100px)", opacity: "0" },
+          "100%": { transform: "translateY(0)", opacity: "1" },
+        },
+      },
+      animation: {
+        "slide-in": "slide-in 0.5s ease-out forwards",
+      },
+    },
   },
   plugins: [],
 };
