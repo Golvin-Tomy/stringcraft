@@ -6,8 +6,8 @@ import bcrypt from "bcryptjs";
 import colors from "colors";
 
 import connectDB from "./config/db.js";
-import Product from "./models/ProductModel.js"
-import User from "./models/User.js";
+import Product from "./models/productModel.js";
+import User from "./models/UserModel.js";
 
 
 dotenv.config();

@@ -10,6 +10,7 @@ export const getProducts = asyncHandler(async (req, res) => {
     name,
     search,
     category,
+    brand,
     minPrice,
     maxPrice,
     minRating,
@@ -19,7 +20,7 @@ export const getProducts = asyncHandler(async (req, res) => {
   limit = parseInt(limit);
 
   const query = {};
-
+  if (brand) query.brand = brand;
   if (name || search) {
     query.name = { $regex: name || search, $options: "i" };
   }

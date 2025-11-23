@@ -1,5 +1,3 @@
-
-
 import mongoose from "mongoose";
 import slugify from "slugify";
 
@@ -8,54 +6,62 @@ const productSchema = mongoose.Schema(
     name: {
       type: String,
       required: [true, "Product name is required"],
-      trim: true
+      trim: true,
     },
     slug: {
       type: String,
-      unique: true
+      unique: true,
     },
     description: {
       type: String,
-      required: [true, "Product description is required"]
+      required: [true, "Product description is required"],
     },
     category: {
       type: String,
-      required: [true, "Category is required"]
+      required: [true, "Category is required"],
     },
     price: {
       type: Number,
       required: [true, "Price is required"],
-      min: 0
+      min: 0,
     },
     images: [
       {
         url: { type: String, required: true },
-        public_id: { type: String }
-      }
+        public_id: { type: String },
+      },
     ],
     stock: {
       type: Number,
       required: true,
       min: 0,
-      default: 0
+      default: 0,
     },
-    type: {
+    brand: {
       type: String,
-      enum: ["electric", "acoustic", "ukulele"],
-      required: true
+      required: true,
+      enum: [
+        "Fender",
+        "Gibson",
+        "Yamaha",
+        "Ibanez",
+        "Kadence",
+        "Kala",
+        "Taylor",
+        "Martin",
+      ],
     },
     ratings: {
       type: Number,
       min: 0,
       max: 5,
-      default: 0
-    }
+      default: 0,
+    },
   },
   {
-    timestamps: true
+    timestamps: true,
   }
 );
-
 
 productSchema.pre("save", function (next) {
   if (this.isModified("name")) {
