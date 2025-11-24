@@ -1,8 +1,8 @@
 import React from "react";
-import AdminProducts from "./Products.jsx";
-import AdminOrders from "./Orders.jsx";
-import AdminUsers from "./Users.jsx";
-import AdminReviews from "./Reviews.jsx";
+import AdminProducts from "./AdminProducts.jsx";
+import AdminOrders from "./AdminOrders.jsx";
+import AdminUsers from "./AdminUsers.jsx";
+import AdminReviews from "./AdminReviews.jsx";
 
 const AdminDashboard = () => {
   return (

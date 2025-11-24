@@ -9,7 +9,7 @@ import Products from "./pages/Products.jsx";
 import ProductDetails from "./pages/ProductDetails.jsx";
 import Cart from "./pages/Cart.jsx";
 import Search from "../src/components/SearchBar.jsx";
-import About from "../src/pages/About.jsx"
+import About from "../src/pages/About.jsx";
 
 import SignIn from "./pages/Auth/SignIn.jsx";
 import SignUp from "./pages/Auth/SignUp.jsx";
@@ -18,10 +18,11 @@ import Checkout from "./pages/Checkout.jsx";
 import Account from "./pages/Account.jsx";
 
 import AdminDashboard from "./pages/Admin/AdminDashboard.jsx";
-import AdminProducts from "./pages/Admin/Products.jsx";
-import AdminOrders from "./pages/Admin/Orders.jsx";
-import AdminUsers from "./pages/Admin/Users.jsx";
-import AdminReviews from "./pages/Admin/Reviews.jsx";
+import AdminProducts from "./pages/Admin/AdminProducts.jsx";
+import AdminOrders from "./pages/Admin/AdminOrders.jsx";
+import AdminUsers from "./pages/Admin/AdminUsers.jsx";
+import AdminReviews from "./pages/Admin/AdminReviews.jsx";
+import AddProduct from "./pages/Admin/AddProducts.jsx";
 
 import NotFound from "./pages/NotFound.jsx";
 
@@ -107,6 +108,14 @@ const App = () => {
             element={
               <AdminRoute>
                 <AdminReviews />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/admin/add-product"
+            element={
+              <AdminRoute>
+                <AddProduct />
               </AdminRoute>
             }
           />
