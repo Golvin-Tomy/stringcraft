@@ -7,13 +7,13 @@ import {
   deleteReviewAdmin,
 } from "../controllers/reviewController.js";
 import { protect } from "../middleware/authMiddleware.js";
-import { admin } from "../middleware/adminMiddleware.js";
+import { adminOnly } from "../middleware/adminMiddleware.js";
 
 const router = express.Router();
 
 
-router.get("/admin", protect, admin, getAllReviewsAdmin);
-router.put("/admin/:id/approve", protect, admin, approveReview);
-router.delete("/admin/:id", protect, admin, deleteReviewAdmin);
+router.get("/admin", protect, adminOnly, getAllReviewsAdmin);
+router.put("/admin/:id/approve", protect, adminOnly, approveReview);
+router.delete("/admin/:id", protect, adminOnly, deleteReviewAdmin);
 
 export default router;

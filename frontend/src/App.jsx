@@ -1,5 +1,6 @@
 import React from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
+import { Toaster } from "react-hot-toast";
 
 import Header from "./components/Header.jsx";
 import Footer from "./components/Footer.jsx";
@@ -36,6 +37,7 @@ const App = () => {
 
   return (
     <div className="flex flex-col min-h-screen bg-white text-black">
+      <Toaster position="top-right" />
       {/* Header */}
       {!isAuthPage && <Header />}
 

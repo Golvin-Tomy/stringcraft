@@ -1,7 +1,7 @@
 
 
 import asyncHandler from "express-async-handler";
-import Review from "../models/Review.js";
+import Review from "../models/ReviewModel.js";
 
 
 export const getAllReviewsAdmin = asyncHandler(async (req, res) => {

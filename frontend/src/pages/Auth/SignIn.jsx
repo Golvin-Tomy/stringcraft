@@ -1,34 +1,32 @@
 import React, { useState } from "react";
-import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
-import { useToast } from "../../components/Toast.jsx";
-import { useAuth } from "../../context/AuthContext.jsx"; // or Zustand store
+import useAuthStore from "../../state/authStore.js"; // Uses your api internally
+import toast from "react-hot-toast";
 
 const SignIn = () => {
   const navigate = useNavigate();
-  const { showToast } = useToast();
-  const { setUser } = useAuth(); // update auth state
-
+  const login = useAuthStore(state => state.login); // ✅ This uses api.post()
   const [form, setForm] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
 
-  const handleChange = (e) =>
-    setForm({ ...form, [e.target.name]: e.target.value });
+  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    try {
-      const { data } = await axios.post("/api/auth/login", form);
-      setUser(data.data); // save JWT or user info in context/store
-      showToast("Logged in successfully", "success");
+    
+    const result = await login(form.email, form.password); // ✅ Uses your api + token handling
+    
+    if (result.success) {
+      toast.success("Logged in successfully!")
       navigate("/");
-    } catch (err) {
-      showToast(err.response?.data?.error || "Login failed", "error");
-    } finally {
-      setLoading(false);
+    } else {
+      toast.error(result.error || "Login failed");
     }
+    
+    setLoading(false);
   };
+
 
   return (
     <div className="max-w-md mx-auto mt-16 p-6 bg-white shadow rounded-lg">

@@ -1,112 +1,37 @@
-
-
-import mongoose from "mongoose";
-import dotenv from "dotenv";
-import bcrypt from "bcryptjs";
-import colors from "colors";
-
-import connectDB from "./config/db.js";
-import Product from "./models/productModel.js";
-import User from "./models/UserModel.js";
-
+// backend/seed.js - CREATE THIS FILE
+import mongoose from 'mongoose';
+import bcrypt from 'bcryptjs';
+import dotenv from 'dotenv';
+import User from './models/UserModel.js';
 
 dotenv.config();
 
+mongoose.connect(process.env.MONGO_URI);
 
-const adminUser = {
-  name: "Admin User",
-  email: "admin@stringcraft.com",
-  password: bcrypt.hashSync("Admin123!", 10),
-  role: "admin",
-};
-
-
-const products = [
-  {
-    name: "Fender Stratocaster",
-    slug: "fender-stratocaster",
-    description: "Iconic electric guitar with classic design.",
-    category: "electric",
-    type: "electric",
-    price: 1200,
-    stock: 10,
-    images: [{ url: "https://via.placeholder.com/300x300" }],
-  },
-  {
-    name: "Gibson Les Paul",
-    slug: "gibson-les-paul",
-    description: "Legendary electric guitar with rich tone.",
-    category: "electric",
-    type: "electric",
-    price: 1500,
-    stock: 8,
-    images: [{ url: "https://via.placeholder.com/300x300" }],
-  },
-  {
-    name: "Yamaha FG800",
-    slug: "yamaha-fg800",
-    description: "Affordable acoustic guitar for beginners.",
-    category: "acoustic",
-    type: "acoustic",
-    price: 200,
-    stock: 15,
-    images: [{ url: "https://via.placeholder.com/300x300" }],
-  },
-  {
-    name: "Cordoba C5",
-    slug: "cordoba-c5",
-    description: "Nylon-string classical acoustic guitar.",
-    category: "acoustic",
-    type: "acoustic",
-    price: 400,
-    stock: 7,
-    images: [{ url: "https://via.placeholder.com/300x300" }],
-  },
-  {
-    name: "Kala KA-15S",
-    slug: "kala-ka-15s",
-    description: "Entry-level soprano ukulele with great tone.",
-    category: "ukulele",
-    type: "ukulele",
-    price: 80,
-    stock: 20,
-    images: [{ url: "https://via.placeholder.com/300x300" }],
-  },
-  {
-    name: "Lanikai LU-21",
-    slug: "lanikai-lu-21",
-    description: "High-quality concert ukulele.",
-    category: "ukulele",
-    type: "ukulele",
-    price: 150,
-    stock: 10,
-    images: [{ url: "https://via.placeholder.com/300x300" }],
-  },
-
-];
-
-
-const seedData = async () => {
+const seedAdmin = async () => {
   try {
-    await connectDB();
-
-    // Clear existing data
-    await Product.deleteMany();
-    await User.deleteMany();
-
-    // Insert admin user
-    const admin = await User.create(adminUser);
-    console.log(colors.green("✅ Admin user created: "), admin.email);
-
-    // Insert products
-    const createdProducts = await Product.insertMany(products);
-    console.log(colors.green(`✅ ${createdProducts.length} products created.`));
-
-    process.exit();
-  } catch (err) {
-    console.error(colors.red(err));
+    // Delete existing admin (clean slate)
+    await User.deleteOne({ email: 'admin@stringcraft.com' });
+    
+    // Create NEW admin with hashed password
+    const admin = await User.create({
+      name: 'Admin User',
+      email: 'admin@stringcraft.com',
+      password: 'Admin123!',  // ← Gets hashed automatically
+      role: 'admin'
+    });
+    
+    console.log('✅ Admin created!');
+    console.log('📧 Email:', admin.email);
+    console.log('🔑 Password: Admin123!');
+    console.log('👑 Role:', admin.role);
+    
+    process.exit(0);
+  } catch (error) {
+    console.error('❌ Seed failed:', error.message);
     process.exit(1);
   }
 };
 
-seedData();
+seedAdmin();
+
