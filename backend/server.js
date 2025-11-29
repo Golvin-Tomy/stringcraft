@@ -1,5 +1,4 @@
 import express from "express";
-import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import dotenv from "dotenv";
 import helmet from "helmet";
@@ -34,7 +33,7 @@ app.use(cors({
 // 🔥 BODY PARSERS
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser());
+
 // 🔥 SECURITY & LOGGING
 app.use(helmet());
 app.use(morgan("dev"));

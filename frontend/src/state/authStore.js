@@ -26,34 +26,50 @@ const useAuthStore = create((set, get) => ({
   },
 
   // Login
-  login: async (email, password) => {
-    set({ loading: true });
-    try {
-      const { data } = await api.post("/auth/login", { email, password });
-      set({ user: data.data.user, token: data.data.token });
-      setToken(data.data.token);
-      return { success: true };
-    } catch (err) {
-      return { success: false, error: err.response?.data?.error || "Login failed" };
-    } finally {
-      set({ loading: false });
-    }
-  },
+login: async (email, password) => {
+  set({ loading: true });
+  try {
+    const { data } = await api.post("/auth/login", { email, password });
+    set({ 
+      user: {
+        _id: data.data._id,
+        name: data.data.name,
+        email: data.data.email,
+        role: data.data.role
+      }, 
+      token: data.data.token 
+    });
+    setToken(data.data.token);
+    return { success: true };
+  } catch (err) {
+    return { success: false, error: err.response?.data?.message || "Login failed" };
+  } finally {
+    set({ loading: false });
+  }
+},
 
   // Signup
-  signup: async (name, email, password) => {
-    set({ loading: true });
-    try {
-      const { data } = await api.post("/auth/signup", { name, email, password });
-      set({ user: data.data.user, token: data.data.token });
-      setToken(data.data.token);
-      return { success: true };
-    } catch (err) {
-      return { success: false, error: err.response?.data?.error || "Signup failed" };
-    } finally {
-      set({ loading: false });
-    }
-  },
+signup: async (name, email, password) => {
+  set({ loading: true });
+  try {
+    const { data } = await api.post("/auth/signup", { name, email, password });
+    set({ 
+      user: {
+        _id: data.data._id,
+        name: data.data.name,
+        email: data.data.email,
+        role: data.data.role
+      }, 
+      token: data.data.token 
+    });
+    setToken(data.data.token);
+    return { success: true };
+  } catch (err) {
+    return { success: false, error: err.response?.data?.message || "Signup failed" };
+  } finally {
+    set({ loading: false });
+  }
+},
 
   // Logout
   logout: () => {
