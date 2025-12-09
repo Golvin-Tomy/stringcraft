@@ -19,7 +19,7 @@ export const AuthProvider = ({ children }) => {
       if (document.cookie.includes("jwt")) {
         try {
           const { data } = await axios.get(
-            "http://localhost:5000/api/users/profile",
+            "http://localhost:5000/api/auth/profile",
             {
               withCredentials: true,
             }

@@ -5,27 +5,37 @@ import toast from "react-hot-toast";
 
 const SignIn = () => {
   const navigate = useNavigate();
-  const login = useAuthStore(state => state.login); // ✅ This uses api.post()
+  const login = useAuthStore(state => state.login);
+   const user = useAuthStore(state => state.user); 
   const [form, setForm] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setLoading(true);
+  
+  const result = await login(form.email, form.password);
+  
+  if (result.success) {
+    toast.success("Logged in successfully!");
     
-    const result = await login(form.email, form.password); // ✅ Uses your api + token handling
     
-    if (result.success) {
-      toast.success("Logged in successfully!")
-      navigate("/");
+      setTimeout(() => {  
+        if (user?.role === 'admin') {
+          navigate("/admin", { replace: true }); 
+        } else {
+          navigate("/", { replace: true });      
+        }
+      }, 100);
     } else {
       toast.error(result.error || "Login failed");
     }
     
     setLoading(false);
   };
+
 
 
   return (
@@ -61,7 +71,7 @@ const SignIn = () => {
 
       <div className="my-4">
         <a
-          href="http://localhost:5000/api/users/google"
+          href="http://localhost:5000/api/auth/google"
           className="flex items-center justify-center w-full px-6 py-3 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition"
         >
           <img

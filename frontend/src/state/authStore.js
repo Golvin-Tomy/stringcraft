@@ -82,3 +82,4 @@ signup: async (name, email, password) => {
 }));
 
 export default useAuthStore;
+export { useAuthStore };

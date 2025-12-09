@@ -31,14 +31,14 @@ router.get(
   passport.authenticate("google", { scope: ["profile", "email"] })
 );
 
-router.get(
-  "/google/callback",
-  passport.authenticate("google", { failureRedirect: "/login" }),
+router.get('/google/callback', 
+  passport.authenticate('google', { session: false }),
   (req, res) => {
-    // Successful auth → generate same JWT as normal login
-    generateToken(res, req.user._id);  // ← your existing function
-    res.redirect("http://localhost:5173/"); // ← your frontend URL (Vite default)
+    const token = generateToken(req.user._id);
+    res.redirect(`http://localhost:5173/?token=${token}`);  // ✅ HOMEPAGE
   }
 );
+
+
 
 export default router;

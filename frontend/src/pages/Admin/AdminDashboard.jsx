@@ -1,16 +1,17 @@
-// pages/Admin/AdminDashboard.jsx - Uses your exact setup
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import useAuthStore from '../../state/authStore.js';
 import api from '../../services/api.js';
 
 const AdminDashboard = () => {
-  const { user } = useAuthStore();
+  const navigate = useNavigate();
+  const { user, logout } = useAuthStore();
+
   const [stats, setStats] = useState({});
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    api.get('/admin/dashboard') // Your backend endpoint
+    api.get('/admin/dashboard')
       .then(res => {
         setStats(res.data.data);
         setLoading(false);
@@ -21,18 +22,63 @@ const AdminDashboard = () => {
       });
   }, []);
 
+  const handleLogout = () => {
+    logout();
+    navigate("/signin");
+  };
+
   if (loading) return <div className="text-center py-12">Loading...</div>;
 
   return (
-    <div>
+    <div className="p-6">
+
+      {/* TOP BAR */}
       <div className="flex justify-between items-center mb-8">
         <div>
           <h1 className="text-3xl font-bold">Welcome, {user?.name}</h1>
           <p className="text-gray-600">Admin Dashboard</p>
         </div>
+
+        {/* LOGOUT BUTTON */}
+        <button
+          onClick={handleLogout}
+          className="px-5 py-2 bg-red-500 text-white rounded-lg shadow hover:bg-red-600"
+        >
+          Logout
+        </button>
       </div>
 
-      {/* Stats Cards */}
+      {/* ADMIN MENU LINKS */}
+      <div className="mb-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+
+        <Link to="/admin/products"
+          className="p-4 bg-white border rounded-lg shadow hover:bg-gray-100 text-center">
+          📦 Manage Products
+        </Link>
+
+        <Link to="/admin/orders"
+          className="p-4 bg-white border rounded-lg shadow hover:bg-gray-100 text-center">
+          📋 Manage Orders
+        </Link>
+
+        <Link to="/admin/users"
+          className="p-4 bg-white border rounded-lg shadow hover:bg-gray-100 text-center">
+          👥 Manage Users
+        </Link>
+
+        <Link to="/admin/reviews"
+          className="p-4 bg-white border rounded-lg shadow hover:bg-gray-100 text-center">
+          ⭐ Reviews
+        </Link>
+
+        <Link to="/admin/add-product"
+          className="p-4 bg-white border rounded-lg shadow hover:bg-gray-100 text-center">
+          ➕ Add Product
+        </Link>
+
+      </div>
+
+      {/* STATS CARDS */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
         <div className="bg-gradient-to-r from-blue-500 to-blue-600 text-white p-8 rounded-xl shadow-lg">
           <h3 className="text-lg opacity-90 mb-2">Total Orders</h3>
@@ -52,24 +98,6 @@ const AdminDashboard = () => {
         </div>
       </div>
 
-      {/* Quick Actions */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <Link to="/admin/products" className="p-8 bg-white border-2 border-dashed border-gray-300 rounded-xl hover:border-blue-300 hover:shadow-xl transition-all text-center">
-          <div className="text-4xl mb-4">📦</div>
-          <h3 className="text-xl font-semibold mb-2">Manage Products</h3>
-          <p>Inventory & stock levels</p>
-        </Link>
-        <Link to="/admin/orders" className="p-8 bg-white border-2 border-dashed border-gray-300 rounded-xl hover:border-green-300 hover:shadow-xl transition-all text-center">
-          <div className="text-4xl mb-4">📋</div>
-          <h3 className="text-xl font-semibold mb-2">Manage Orders</h3>
-          <p>Process & ship orders</p>
-        </Link>
-        <Link to="/admin/users" className="p-8 bg-white border-2 border-dashed border-gray-300 rounded-xl hover:border-purple-300 hover:shadow-xl transition-all text-center">
-          <div className="text-4xl mb-4">👥</div>
-          <h3 className="text-xl font-semibold mb-2">Manage Users</h3>
-          <p>Customer accounts</p>
-        </Link>
-      </div>
     </div>
   );
 };

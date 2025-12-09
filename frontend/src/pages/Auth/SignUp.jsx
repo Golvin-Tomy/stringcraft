@@ -93,7 +93,7 @@ const SignUp = () => {
 
         <div className="my-4">
           <a
-            href="http://localhost:5000/api/users/google"
+            href="http://localhost:5000/api/auth/google"
             className="flex items-center justify-center w-full px-6 py-3 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition"
           >
             <img

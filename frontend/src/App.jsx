@@ -1,6 +1,8 @@
 import React from "react";
-import { Routes, Route, useLocation } from "react-router-dom";
+import { useAuthStore } from "./state/authStore";
+import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
+import { useEffect } from "react";
 
 import Header from "./components/Header.jsx";
 import Footer from "./components/Footer.jsx";
@@ -31,15 +33,51 @@ import ProtectedRoute from "./routes/ProtectedRoute.jsx";
 import AdminRoute from "./routes/AdminRoute.jsx";
 
 const App = () => {
+  const navigate = useNavigate();
   const location = useLocation();
+  const { setState: setAuth } = useAuthStore();
+  useEffect(() => {
+    const urlParams = new URLSearchParams(location.search);
+    const token = urlParams.get("token");
+    const authSuccess = urlParams.get("auth") === "success";
+
+    if (token && authSuccess) {
+      // ✅ Save token + user from OAuth
+      setAuth({
+        user: {
+          _id: "from-oauth",
+          name: "Google User",
+          email: "from-oauth",
+          role: "user",
+        },
+        token,
+      });
+
+      navigate("/", { replace: true });
+    }
+  }, [location.search, navigate, setAuth]);
+
+  const user = useAuthStore((state) => state.user);
+  useEffect(() => {
+    if (user) {
+      if (user.role === "admin") {
+        navigate("/admin", { replace: true });
+      } else {
+        navigate("/", { replace: true });
+      }
+    }
+  }, [user, navigate]); 
+
+  const isAdminPage = location.pathname.startsWith('/admin');
   const isAuthPage =
     location.pathname === "/signin" || location.pathname === "/signup";
-
+  const showHeaderFooter = !isAdminPage && !isAuthPage;
+ 
   return (
     <div className="flex flex-col min-h-screen bg-white text-black">
       <Toaster position="top-right" />
       {/* Header */}
-      {!isAuthPage && <Header />}
+      {showHeaderFooter && <Header />}
 
       {/* Main Content */}
       <main className="flex-grow container mx-auto px-4 py-6">
@@ -128,7 +166,7 @@ const App = () => {
       </main>
 
       {/* Footer */}
-      {!isAuthPage && <Footer />}
+       {showHeaderFooter && <Footer />}
     </div>
   );
 };

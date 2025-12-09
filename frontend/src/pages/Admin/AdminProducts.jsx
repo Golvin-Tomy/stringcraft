@@ -4,24 +4,24 @@ import axios from "axios";
 import { useToast } from "../../components/Toast.jsx";
 import ProductList from "../../components/ProductList.jsx";
 
+
 const AdminProducts = () => {
   const { showToast } = useToast();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const fetchProducts = async () => {
+const fetchProducts = async () => {
+  try {
     setLoading(true);
-    try {
-      const { data } = await axios.get("/api/products/admin", {
-        withCredentials: true,
-      });
-      setProducts(data.data || data);
-    } catch (err) {
-      showToast(err.response?.data?.error || "Failed to load products", "error");
-    } finally {
-      setLoading(false);
-    }
-  };
+    const response = await api.get('/api/admin/products');  // ✅ Backend route
+    setProducts(response.data);
+  } catch (error) {
+    console.error('Products error:', error);
+    toast.error(error.response?.data?.message || 'Failed to load products');
+  } finally {
+    setLoading(false);
+  }
+};
 
   const deleteProduct = async (id) => {
     if (!window.confirm("Delete this guitar permanently?")) return;
