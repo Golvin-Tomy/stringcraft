@@ -17,7 +17,7 @@ const seedAdmin = async () => {
     const admin = await User.create({
       name: 'Admin User',
       email: 'admin@stringcraft.com',
-      password: 'Admin123!',  // ← Gets hashed automatically
+      password: 'Admin123!',  
       role: 'admin'
     });
     

@@ -1,35 +1,42 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import axios from "axios";
-import { useToast } from "../../components/Toast.jsx";
+import axios from "axios"; // ✅ USE AXIOS
+import { useToast } from "../../components/Toast.jsx"; // ✅ YOUR CUSTOM TOAST
 import ProductList from "../../components/ProductList.jsx";
-
+import useAuthStore from "../../state/authStore.js";
 
 const AdminProducts = () => {
-  const { showToast } = useToast();
+  const { user, token } = useAuthStore();
+  const { showToast } = useToast(); // ✅ YOUR CUSTOM TOAST
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
-const fetchProducts = async () => {
-  try {
-    setLoading(true);
-    const response = await api.get('/api/admin/products');  // ✅ Backend route
-    setProducts(response.data);
-  } catch (error) {
-    console.error('Products error:', error);
-    toast.error(error.response?.data?.message || 'Failed to load products');
-  } finally {
-    setLoading(false);
-  }
-};
+  const fetchProducts = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get(
+        "http://localhost:5000/api/admin/products",
+        {
+          headers: { Authorization: `Bearer ${token}` }, // ✅ JWT
+        }
+      );
+      setProducts(response.data);
+    } catch (error) {
+      console.error("Products error:", error);
+      showToast(
+        error.response?.data?.message || "Failed to load products",
+        "error"
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const deleteProduct = async (id) => {
     if (!window.confirm("Delete this guitar permanently?")) return;
 
     try {
-      await axios.delete(`/api/products/admin/${id}`, {
-        withCredentials: true,
-      });
+      await axios.delete(`http://localhost:5000/api/admin/products/${id}`);
       showToast("Product deleted successfully", "success");
       fetchProducts();
     } catch (err) {
@@ -38,15 +45,17 @@ const fetchProducts = async () => {
   };
 
   useEffect(() => {
-    fetchProducts();
-  }, []);
+    if (token) fetchProducts();  // ✅ Only if logged in
+  }, [token]);
 
   return (
     <div className="space-y-8">
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Products Management</h1>
+          <h1 className="text-3xl font-bold text-gray-900">
+            Products Management
+          </h1>
           <p className="text-gray-600 mt-1">Total: {products.length} guitars</p>
         </div>
         <div className="flex gap-4">
@@ -82,11 +91,7 @@ const fetchProducts = async () => {
         </div>
       ) : (
         <div className="bg-white rounded-xl shadow overflow-hidden">
-          <ProductList 
-            products={products} 
-            admin 
-            onDelete={deleteProduct}
-          />
+          <ProductList products={products} admin onDelete={deleteProduct} />
         </div>
       )}
     </div>

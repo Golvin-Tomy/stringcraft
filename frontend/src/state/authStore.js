@@ -35,7 +35,7 @@ login: async (email, password) => {
         _id: data.data._id,
         name: data.data.name,
         email: data.data.email,
-        role: data.data.role
+        role: data.data.role.toLowerCase()
       }, 
       token: data.data.token 
     });
@@ -58,7 +58,7 @@ signup: async (name, email, password) => {
         _id: data.data._id,
         name: data.data.name,
         email: data.data.email,
-        role: data.data.role
+        role: data.data.role.toLowerCase()
       }, 
       token: data.data.token 
     });

@@ -3,6 +3,7 @@ import { useAuthStore } from "./state/authStore";
 import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import { useEffect } from "react";
+import ToastProvider from "./components/Toast.jsx";
 
 import Header from "./components/Header.jsx";
 import Footer from "./components/Footer.jsx";
@@ -74,6 +75,7 @@ const App = () => {
   const showHeaderFooter = !isAdminPage && !isAuthPage;
  
   return (
+    <ToastProvider>
     <div className="flex flex-col min-h-screen bg-white text-black">
       <Toaster position="top-right" />
       {/* Header */}
@@ -168,6 +170,7 @@ const App = () => {
       {/* Footer */}
        {showHeaderFooter && <Footer />}
     </div>
+    </ToastProvider>
   );
 };
 
