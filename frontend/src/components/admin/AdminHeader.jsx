@@ -1,6 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext.jsx";   // ← your AuthContext
+import { useAuth } from "../../context/AuthContext.jsx";   // ← your AuthContext
 
 const AdminHeader = () => {
   const navigate = useNavigate();
@@ -18,11 +18,11 @@ const AdminHeader = () => {
 
 Name="text-2xl font-bold">StringCraft Admin</h1>
         {/* Optional: Show admin name */}
-        {user && (
+        {/* {user && (
           <span className="text-sm opacity-80">
             Hi, {user.name?.split(" ")[0] || "Admin"} 👋
           </span>
-        )}
+        )} */}
       </div>
 
       <button

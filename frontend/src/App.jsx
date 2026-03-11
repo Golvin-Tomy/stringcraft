@@ -27,6 +27,7 @@ import AdminOrders from "./pages/Admin/AdminOrders.jsx";
 import AdminUsers from "./pages/Admin/AdminUsers.jsx";
 import AdminReviews from "./pages/Admin/AdminReviews.jsx";
 import AddProduct from "./pages/Admin/AddProducts.jsx";
+import AdminLayout from "./components/admin/AdminLayout.jsx";
 
 import NotFound from "./pages/NotFound.jsx";
 
@@ -58,118 +59,87 @@ const App = () => {
     }
   }, [location.search, navigate, setAuth]);
 
-  const user = useAuthStore((state) => state.user);
-  useEffect(() => {
-    if (user) {
-      if (user.role === "admin") {
-        navigate("/admin", { replace: true });
-      } else {
-        navigate("/", { replace: true });
-      }
-    }
-  }, [user, navigate]); 
+  // const user = useAuthStore((state) => state.user);
+  // useEffect(() => {
+  //   if (user) {
+  //     if (user.role === "admin") {
+  //       navigate("/admin", { replace: true });
+  //     } else {
+  //       navigate("/", { replace: true });
+  //     }
+  //   }
+  // }, [user, navigate]);
 
-  const isAdminPage = location.pathname.startsWith('/admin');
+  const isAdminPage = location.pathname.startsWith("/admin");
   const isAuthPage =
     location.pathname === "/signin" || location.pathname === "/signup";
   const showHeaderFooter = !isAdminPage && !isAuthPage;
- 
+
   return (
     <ToastProvider>
-    <div className="flex flex-col min-h-screen bg-white text-black">
-      <Toaster position="top-right" />
-      {/* Header */}
-      {showHeaderFooter && <Header />}
+      <div className="flex flex-col min-h-screen bg-white text-black">
+        <Toaster position="top-right" />
+        {/* Header */}
+        {showHeaderFooter && <Header />}
 
-      {/* Main Content */}
-      <main className="flex-grow container mx-auto px-4 py-6">
-        <Routes>
-          {/* 🌍 Public Routes */}
-          <Route path="/" element={<Home />} />
-          <Route path="/products" element={<Products />} />
-          <Route path="/products/:id" element={<ProductDetails />} />
-          <Route path="/cart" element={<Cart />} />
-          <Route path="/search" element={<Search />} />
-          <Route path="/signin" element={<SignIn />} />
-          <Route path="/signup" element={<SignUp />} />
-          <Route path="/about" element={<About />} />
+        {/* Main Content */}
+        <main className="flex-grow container mx-auto px-4 py-6">
+          <Routes>
+            {/* 🌍 Public Routes */}
+            <Route path="/" element={<Home />} />
+            <Route path="/products" element={<Products />} />
+            <Route path="/products/:id" element={<ProductDetails />} />
+            <Route path="/cart" element={<Cart />} />
+            <Route path="/search" element={<Search />} />
+            <Route path="/signin" element={<SignIn />} />
+            <Route path="/signup" element={<SignUp />} />
+            <Route path="/about" element={<About />} />
 
-          {/* 🔐 Protected (User) Routes */}
-          <Route
-            path="/checkout"
-            element={
-              <ProtectedRoute>
-                <Checkout />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/account"
-            element={
-              <ProtectedRoute>
-                <Account />
-              </ProtectedRoute>
-            }
-          />
+            {/* 🔐 Protected (User) Routes */}
+            <Route
+              path="/checkout"
+              element={
+                <ProtectedRoute>
+                  <Checkout />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/account"
+              element={
+                <ProtectedRoute>
+                  <Account />
+                </ProtectedRoute>
+              }
+            />
 
-          {/* 🛠️ Admin Routes */}
-          <Route
-            path="/admin"
-            element={
-              <AdminRoute>
-                <AdminDashboard />
-              </AdminRoute>
-            }
-          />
-          <Route
-            path="/admin/products"
-            element={
-              <AdminRoute>
-                <AdminProducts />
-              </AdminRoute>
-            }
-          />
-          <Route
-            path="/admin/orders"
-            element={
-              <AdminRoute>
-                <AdminOrders />
-              </AdminRoute>
-            }
-          />
-          <Route
-            path="/admin/users"
-            element={
-              <AdminRoute>
-                <AdminUsers />
-              </AdminRoute>
-            }
-          />
-          <Route
-            path="/admin/reviews"
-            element={
-              <AdminRoute>
-                <AdminReviews />
-              </AdminRoute>
-            }
-          />
-          <Route
-            path="/admin/add-product"
-            element={
-              <AdminRoute>
-                <AddProduct />
-              </AdminRoute>
-            }
-          />
+            {/* 🛠️ Admin Routes */}
 
-          {/* 🚫 404 - Not Found */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </main>
+            <Route
+              path="/admin"
+              element={
+                <AdminRoute>
+                  <AdminLayout />{" "}
+                </AdminRoute>
+              }
+            >
+              <Route index element={<AdminDashboard />} />{" "}
+              <Route path="dashboard" element={<AdminDashboard />} />
+              <Route path="products" element={<AdminProducts />} />
+              <Route path="add-product" element={<AddProduct />} />
+              <Route path="orders" element={<AdminOrders />} />
+              <Route path="users" element={<AdminUsers />} />
+              <Route path="reviews" element={<AdminReviews />} />
+            </Route>
 
-      {/* Footer */}
-       {showHeaderFooter && <Footer />}
-    </div>
+            {/* 🚫 404 - Not Found */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </main>
+
+        {/* Footer */}
+        {showHeaderFooter && <Footer />}
+      </div>
     </ToastProvider>
   );
 };

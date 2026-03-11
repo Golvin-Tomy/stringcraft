@@ -32,21 +32,7 @@ const AdminDashboard = () => {
   return (
     <div className="p-6">
 
-      {/* TOP BAR */}
-      <div className="flex justify-between items-center mb-8">
-        <div>
-          <h1 className="text-3xl font-bold">Welcome, {user?.name}</h1>
-          <p className="text-gray-600">Admin Dashboard</p>
-        </div>
 
-        {/* LOGOUT BUTTON */}
-        <button
-          onClick={handleLogout}
-          className="px-5 py-2 bg-red-500 text-white rounded-lg shadow hover:bg-red-600"
-        >
-          Logout
-        </button>
-      </div>
 
       {/* ADMIN MENU LINKS */}
       <div className="mb-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
