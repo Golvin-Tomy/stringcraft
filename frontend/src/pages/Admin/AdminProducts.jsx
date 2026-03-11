@@ -7,7 +7,7 @@ import useAuthStore from "../../state/authStore.js";
 
 const AdminProducts = () => {
   const { user, token } = useAuthStore();
-  const { showToast } = useToast(); // ✅ YOUR CUSTOM TOAST
+  const { addToast } = useToast(); 
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -18,14 +18,14 @@ const AdminProducts = () => {
         "http://localhost:5000/api/admin/products",
         {
           headers: { Authorization: `Bearer ${token}` }, // ✅ JWT
-        }
+        },
       );
       setProducts(response.data);
     } catch (error) {
       console.error("Products error:", error);
       showToast(
         error.response?.data?.message || "Failed to load products",
-        "error"
+        "error",
       );
     } finally {
       setLoading(false);
@@ -36,16 +36,18 @@ const AdminProducts = () => {
     if (!window.confirm("Delete this guitar permanently?")) return;
 
     try {
-      await axios.delete(`http://localhost:5000/api/admin/products/${id}`);
-      showToast("Product deleted successfully", "success");
+      await axios.delete(`http://localhost:5000/api/admin/products/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      addToast("Product deleted successfully", "success");
       fetchProducts();
     } catch (err) {
-      showToast(err.response?.data?.error || "Delete failed", "error");
+      addToast(err.response?.data?.error || "Delete failed", "error");
     }
   };
 
   useEffect(() => {
-    if (token) fetchProducts();  // ✅ Only if logged in
+    if (token) fetchProducts(); // ✅ Only if logged in
   }, [token]);
 
   return (

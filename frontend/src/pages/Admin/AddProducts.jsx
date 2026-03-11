@@ -4,7 +4,7 @@ import axios from "axios";
 import { useToast } from "../../components/Toast.jsx";
 
 const AddProduct = () => {
-  const { showToast } = useToast();
+  const { addToast } = useToast();
   const navigate = useNavigate();
 
   const [form, setForm] = useState({
@@ -28,18 +28,28 @@ const AddProduct = () => {
     if (!file) return;
 
     const formData = new FormData();
-    formData.append("image", file);
+    formData.append("images", file);
+
+    const token = localStorage.getItem("token");
 
     setUploading(true);
     try {
-      const { data } = await axios.post("/api/upload", formData, {
-        withCredentials: true,
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-      setForm({ ...form, image: data.url });
-      showToast("Image uploaded!", "success");
+      const { data } = await axios.post(
+        "http://localhost:5000/api/upload",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+      setForm({ ...form, image: data.urls[0] });
+      addToast("Image uploaded!", "success");
     } catch (err) {
-      showToast("Image upload failed", "error");
+      console.error("UPLOAD ERROR:", err);
+      console.error("SERVER RESPONSE:", err.response);
+      addToast("Image upload failed", "error");
     } finally {
       setUploading(false);
     }
@@ -49,18 +59,29 @@ const AddProduct = () => {
     e.preventDefault();
 
     if (!form.image) {
-      showToast("Please upload an image", "error");
+      addToast("Please upload an image", "error");
       return;
     }
 
     try {
-      await axios.post("/api/products", form, {
-        withCredentials: true,
-      });
-      showToast("Guitar added successfully!", "success");
+      const token = localStorage.getItem("token");
+      await axios.post(
+        "http://localhost:5000/api/products",
+        {
+          ...form,
+          images: [{ url: form.image }],
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+      addToast("Guitar added successfully!", "success");
       navigate("/admin/products");
     } catch (err) {
-      showToast(err.response?.data?.error || "Failed to add product", "error");
+      console.error(err);
+      addToast(err.response?.data?.error || "Failed to add product", "error");
     }
   };
 
@@ -70,14 +91,21 @@ const AddProduct = () => {
         {/* Header */}
         <div className="mb-10">
           <h1 className="text-4xl font-bold text-gray-900">Add New Guitar</h1>
-          <p className="text-gray-600 mt-2">Fill all details to list a new guitar</p>
+          <p className="text-gray-600 mt-2">
+            Fill all details to list a new guitar
+          </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-xl p-8 space-y-8">
+        <form
+          onSubmit={handleSubmit}
+          className="bg-white rounded-2xl shadow-xl p-8 space-y-8"
+        >
           {/* Name & Brand */}
           <div className="grid md:grid-cols-2 gap-6">
             <div>
-              <label className="block text-lg font-medium text-gray-700 mb-2">Guitar Name</label>
+              <label className="block text-lg font-medium text-gray-700 mb-2">
+                Guitar Name
+              </label>
               <input
                 type="text"
                 name="name"
@@ -89,7 +117,9 @@ const AddProduct = () => {
               />
             </div>
             <div>
-              <label className="block text-lg font-medium text-gray-700 mb-2">Brand</label>
+              <label className="block text-lg font-medium text-gray-700 mb-2">
+                Brand
+              </label>
               <input
                 type="text"
                 name="brand"
@@ -104,7 +134,9 @@ const AddProduct = () => {
 
           {/* Description */}
           <div>
-            <label className="block text-lg font-medium text-gray-700 mb-2">Description</label>
+            <label className="block text-lg font-medium text-gray-700 mb-2">
+              Description
+            </label>
             <textarea
               name="description"
               value={form.description}
@@ -119,7 +151,9 @@ const AddProduct = () => {
           {/* Price & Stock */}
           <div className="grid md:grid-cols-2 gap-6">
             <div>
-              <label className="block text-lg font-medium text-gray-700 mb-2">Price (₹)</label>
+              <label className="block text-lg font-medium text-gray-700 mb-2">
+                Price (₹)
+              </label>
               <input
                 type="number"
                 name="price"
@@ -131,7 +165,9 @@ const AddProduct = () => {
               />
             </div>
             <div>
-              <label className="block text-lg font-medium text-gray-700 mb-2">Stock Quantity</label>
+              <label className="block text-lg font-medium text-gray-700 mb-2">
+                Stock Quantity
+              </label>
               <input
                 type="number"
                 name="stock"
@@ -146,7 +182,9 @@ const AddProduct = () => {
 
           {/* Category */}
           <div>
-            <label className="block text-lg font-medium text-gray-700 mb-2">Category</label>
+            <label className="block text-lg font-medium text-gray-700 mb-2">
+              Category
+            </label>
             <select
               name="category"
               value={form.category}
@@ -161,14 +199,18 @@ const AddProduct = () => {
 
           {/* Image Upload */}
           <div>
-            <label className="block text-lg font-medium text-gray-700 mb-2">Product Image</label>
+            <label className="block text-lg font-medium text-gray-700 mb-2">
+              Product Image
+            </label>
             <input
               type="file"
               accept="image/*"
               onChange={handleImageUpload}
               className="w-full border-2 border-dashed rounded-lg px-5 py-8 text-center cursor-pointer hover:border-indigo-500 transition"
             />
-            {uploading && <p className="mt-3 text-indigo-600">Uploading image...</p>}
+            {uploading && (
+              <p className="mt-3 text-indigo-600">Uploading image...</p>
+            )}
             {form.image && (
               <div className="mt-4">
                 <img

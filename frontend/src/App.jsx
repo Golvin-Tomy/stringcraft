@@ -28,6 +28,7 @@ import AdminUsers from "./pages/Admin/AdminUsers.jsx";
 import AdminReviews from "./pages/Admin/AdminReviews.jsx";
 import AddProduct from "./pages/Admin/AddProducts.jsx";
 import AdminLayout from "./components/admin/AdminLayout.jsx";
+import EditProduct from "./pages/Admin/EditProduct.jsx";
 
 import NotFound from "./pages/NotFound.jsx";
 
@@ -127,6 +128,7 @@ const App = () => {
               <Route path="dashboard" element={<AdminDashboard />} />
               <Route path="products" element={<AdminProducts />} />
               <Route path="add-product" element={<AddProduct />} />
+              <Route path="edit-product/:id" element={<EditProduct />} />
               <Route path="orders" element={<AdminOrders />} />
               <Route path="users" element={<AdminUsers />} />
               <Route path="reviews" element={<AdminReviews />} />
