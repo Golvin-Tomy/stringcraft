@@ -40,12 +40,12 @@ const ProductDetails = () => {
   return (
     <div className="space-y-8">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="space-y-2">
+        <div className="space-y-2 flex justify-center">
           {product.images?.length > 0 ? (
             <img
-              src={product.images[0]}
+              src={product.images?.[0]?.url || "/placeholder.png"}
               alt={product.name}
-              className="w-full h-96 object-cover rounded-lg"
+              className="block w-[1000px] max-w-full h-auto mx-auto"
             />
           ) : (
             <div className="w-full h-96 bg-gray-200 rounded-lg" />

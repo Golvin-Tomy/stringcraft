@@ -80,7 +80,7 @@ const AddProduct = () => {
       addToast("Guitar added successfully!", "success");
       navigate("/admin/products");
     } catch (err) {
-      console.error(err);
+      console.error("SERVER MESSAGE:", err.response?.data);
       addToast(err.response?.data?.error || "Failed to add product", "error");
     }
   };
