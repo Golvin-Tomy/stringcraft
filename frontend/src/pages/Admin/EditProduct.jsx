@@ -9,29 +9,41 @@ const EditProduct = () => {
   const { token } = useAuthStore();
 
   const [loading, setLoading] = useState(true);
+  const [uploading, setUploading] = useState(false);
 
-  const [product, setProduct] = useState({
+  const [form, setForm] = useState({
     name: "",
-    price: "",
-    quantity: "",
     description: "",
+    price: "",
+    category: "electric",
+    brand: "",
+    stock: "",
     images: [],
+    featured: false,
   });
 
-  const [imageFile, setImageFile] = useState(null);
   const [preview, setPreview] = useState("");
 
   // Fetch product
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        const res = await axios.get(
-          `http://localhost:5000/api/admin/products/${id}`,
+        const { data } = await axios.get(
+          `http://localhost:5000/api/products/${id}`,
           { headers: { Authorization: `Bearer ${token}` } },
         );
 
-        setProduct(res.data);
-        setPreview(res.data.images?.[0] || "");
+        setForm({
+          name: data.name || "",
+          description: data.description || "",
+          price: data.price || "",
+          category: data.category || "electric",
+          brand: data.brand || "",
+          stock: data.stock || "",
+          images: data.images || [],
+          featured: data.featured || false,
+        });
+        setPreview(data.images?.[0]?.url || "");
         setLoading(false);
       } catch (error) {
         console.error(error);
@@ -42,116 +54,194 @@ const EditProduct = () => {
   }, [id, token]);
 
   const handleChange = (e) => {
-    setProduct({
-      ...product,
-      [e.target.name]: e.target.value,
-    });
+    const { name, value, type, checked } = e.target;
+    setForm((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value,
+    }));
   };
 
-  const handleImage = (e) => {
+  const handleImageUpload = async (e) => {
     const file = e.target.files[0];
-    setImageFile(file);
-    setPreview(URL.createObjectURL(file));
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append("images", file);
+
+    setUploading(true);
+    try {
+      const { data } = await axios.post(
+        "http://localhost:5000/api/upload",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+      setForm((prev) => ({ ...prev, images: [{ url: data.urls[0] }] }));
+      setPreview(data.urls[0]);
+    } catch (err) {
+      console.error("Upload error:", err.response?.data);
+      alert("Image upload failed");
+    } finally {
+      setUploading(false);
+    }
   };
 
-  const updateProduct = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      let imageUrl = product.images?.[0]?.url || "";
-
-      // Upload image if a new one is selected
-      if (product.image) {
-        const imgData = new FormData();
-        imgData.append("images", product.image);
-
-        const uploadRes = await axios.post(
-          "http://localhost:5000/api/upload",
-          imgData,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          },
-        );
-
-        imageUrl = uploadRes.data.urls[0];
-      }
-
       await axios.put(
-        `http://localhost:5000/api/admin/products/${id}`,
+        `http://localhost:5000/api/products/${id}`,
         {
-          name: product.name,
-          price: product.price,
-          quantity: product.quantity,
-          description: product.description,
-          imageUrl: imageUrl,
+          name: form.name,
+          description: form.description,
+          price: Number(form.price),
+          category: form.category,
+          brand: form.brand,
+          stock: Number(form.stock),
+          images: form.images,
+          featured: form.featured,
         },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        },
+        { headers: { Authorization: `Bearer ${token}` } },
       );
 
       alert("Product updated successfully");
       navigate("/admin/products");
     } catch (error) {
-      console.error(error);
-      alert("Update failed");
+      console.error("SERVER MESSAGE:", error.response?.data);
+      alert(error.response?.data?.message || "Update failed");
     }
   };
 
   if (loading) return <p className="text-center mt-10">Loading product...</p>;
 
   return (
-    <div className="max-w-3xl mx-auto bg-white p-8 rounded-xl shadow">
-      <h1 className="text-3xl font-bold mb-6">Edit Product</h1>
+    <div className="min-h-screen bg-gray-100 py-12">
+      <div className="container mx-auto px-6 max-w-4xl">
+        <div className="mb-10">
+          <h1 className="text-4xl font-bold text-gray-900">Edit Guitar</h1>
+          <p className="text-gray-600 mt-2">Update the details of this product</p>
+        </div>
 
-      <form onSubmit={updateProduct} className="space-y-5">
-        {preview && (
-          <img
-            src={preview}
-            alt="Preview"
-            className="w-40 h-40 object-cover rounded"
-          />
-        )}
+        <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-xl p-8 space-y-8">
+          {/* Name & Brand */}
+          <div className="grid md:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-lg font-medium text-gray-700 mb-2">Guitar Name</label>
+              <input
+                type="text" name="name" value={form.name} onChange={handleChange}
+                placeholder="e.g. Fender Player Stratocaster"
+                className="w-full border-2 rounded-lg px-5 py-4 focus:ring-2 focus:ring-indigo-500"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-lg font-medium text-gray-700 mb-2">Brand</label>
+              <select
+                name="brand" value={form.brand} onChange={handleChange}
+                className="w-full border-2 rounded-lg px-5 py-4 focus:ring-2 focus:ring-indigo-500"
+                required
+              >
+                <option value="">Select a brand</option>
+                {["Fender", "Gibson", "Yamaha", "Ibanez", "Kadence", "Kala", "Taylor", "Martin"].map((b) => (
+                  <option key={b} value={b}>{b}</option>
+                ))}
+              </select>
+            </div>
+          </div>
 
-        <input type="file" onChange={handleImage} />
+          {/* Description */}
+          <div>
+            <label className="block text-lg font-medium text-gray-700 mb-2">Description</label>
+            <textarea
+              name="description" value={form.description} onChange={handleChange}
+              rows="5" placeholder="Write a detailed description..."
+              className="w-full border-2 rounded-lg px-5 py-4 focus:ring-2 focus:ring-indigo-500"
+              required
+            />
+          </div>
 
-        <input
-          className="w-full border p-3 rounded"
-          name="name"
-          value={product.name}
-          onChange={handleChange}
-          placeholder="Product Name"
-        />
+          {/* Price & Stock */}
+          <div className="grid md:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-lg font-medium text-gray-700 mb-2">Price (₹)</label>
+              <input
+                type="number" name="price" value={form.price} onChange={handleChange}
+                className="w-full border-2 rounded-lg px-5 py-4 focus:ring-2 focus:ring-indigo-500"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-lg font-medium text-gray-700 mb-2">Stock Quantity</label>
+              <input
+                type="number" name="stock" value={form.stock} onChange={handleChange}
+                className="w-full border-2 rounded-lg px-5 py-4 focus:ring-2 focus:ring-indigo-500"
+                required
+              />
+            </div>
+          </div>
 
-        <input
-          className="w-full border p-3 rounded"
-          name="price"
-          value={product.price}
-          onChange={handleChange}
-          placeholder="Price"
-        />
+          {/* Category */}
+          <div>
+            <label className="block text-lg font-medium text-gray-700 mb-2">Category</label>
+            <select
+              name="category" value={form.category} onChange={handleChange}
+              className="w-full border-2 rounded-lg px-5 py-4 focus:ring-2 focus:ring-indigo-500"
+            >
+              <option value="electric">Electric Guitar</option>
+              <option value="acoustic">Acoustic Guitar</option>
+              <option value="ukulele">Ukulele</option>
+            </select>
+          </div>
 
-        <input
-          className="w-full border p-3 rounded"
-          name="quantity"
-          value={product.quantity}
-          onChange={handleChange}
-          placeholder="Quantity"
-        />
+          {/* Featured Toggle */}
+          <div className="flex items-center gap-3">
+            <input
+              type="checkbox" name="featured" id="featured"
+              checked={form.featured} onChange={handleChange}
+              className="w-5 h-5 accent-indigo-600 cursor-pointer"
+            />
+            <label htmlFor="featured" className="text-lg font-medium text-gray-700 cursor-pointer">
+              Mark as Featured
+            </label>
+          </div>
 
-        <textarea
-          className="w-full border p-3 rounded"
-          rows="4"
-          name="description"
-          value={product.description}
-          onChange={handleChange}
-          placeholder="Description"
-        />
+          {/* Image Upload */}
+          <div>
+            <label className="block text-lg font-medium text-gray-700 mb-2">Product Image</label>
+            <input
+              type="file" accept="image/*" onChange={handleImageUpload}
+              className="w-full border-2 border-dashed rounded-lg px-5 py-8 text-center cursor-pointer hover:border-indigo-500 transition"
+            />
+            {uploading && <p className="mt-3 text-indigo-600">Uploading image...</p>}
+            {preview && (
+              <div className="mt-4">
+                <img src={preview} alt="Preview" className="w-full max-w-md h-80 object-cover rounded-lg shadow" />
+              </div>
+            )}
+          </div>
 
-        <button className="bg-green-600 text-white px-6 py-3 rounded hover:bg-green-700">
-          Update Product
-        </button>
-      </form>
+          {/* Submit */}
+          <div className="flex gap-4 pt-6">
+            <button
+              type="submit" disabled={uploading}
+              className="flex-1 bg-black text-white py-5 rounded-lg text-xl font-bold hover:bg-gray-800 transition disabled:opacity-50"
+            >
+              {uploading ? "Uploading..." : "Update Guitar"}
+            </button>
+            <button
+              type="button" onClick={() => navigate("/admin/products")}
+              className="px-8 py-5 border-2 border-gray-300 rounded-lg font-bold hover:bg-gray-50 transition"
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 };

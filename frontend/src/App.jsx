@@ -38,7 +38,12 @@ import AdminRoute from "./routes/AdminRoute.jsx";
 const App = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { setState: setAuth } = useAuthStore();
+  const { setState: setAuth, initUser } = useAuthStore();
+
+    useEffect(() => {
+    initUser();
+  }, []);
+  
   useEffect(() => {
     const urlParams = new URLSearchParams(location.search);
     const token = urlParams.get("token");
@@ -60,16 +65,7 @@ const App = () => {
     }
   }, [location.search, navigate, setAuth]);
 
-  // const user = useAuthStore((state) => state.user);
-  // useEffect(() => {
-  //   if (user) {
-  //     if (user.role === "admin") {
-  //       navigate("/admin", { replace: true });
-  //     } else {
-  //       navigate("/", { replace: true });
-  //     }
-  //   }
-  // }, [user, navigate]);
+
 
   const isAdminPage = location.pathname.startsWith("/admin");
   const isAuthPage =

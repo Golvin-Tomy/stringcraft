@@ -14,6 +14,7 @@ export const getProducts = asyncHandler(async (req, res) => {
     minPrice,
     maxPrice,
     minRating,
+    featured,
   } = req.query;
 
   page = parseInt(page);
@@ -31,6 +32,7 @@ export const getProducts = asyncHandler(async (req, res) => {
     if (maxPrice) query.price.$lte = parseFloat(maxPrice);
   }
   if (minRating) query.ratings = { $gte: parseFloat(minRating) };
+  if (featured) query.featured = featured === "true";
 
   const total = await Product.countDocuments(query);
   const sortOrder = order === "asc" ? 1 : -1;
@@ -60,16 +62,17 @@ export const getProductById = asyncHandler(async (req, res) => {
 });
 
 export const createProduct = asyncHandler(async (req, res) => {
-  const { name, description, price, category, stock, brand, images } = req.body;
+  const { name, description, price, category, stock, brand, images,featured } = req.body;
 
   const product = new Product({
     name,
     description,
-    price,
+    price: Number(price),
     category,
-    stock,
+    stock: Number(stock),
     brand,
     images,
+    featured: featured || false,
   });
 
   const createdProduct = await product.save();
@@ -77,16 +80,17 @@ export const createProduct = asyncHandler(async (req, res) => {
 });
 
 export const updateProduct = asyncHandler(async (req, res) => {
-  const { name, description, price, category, stock, image } = req.body;
+  const { name, description, price, category, stock, images,featured } = req.body;
   const product = await Product.findById(req.params.id);
 
   if (product) {
     product.name = name || product.name;
     product.description = description || product.description;
-    product.price = price || product.price;
+    product.price = price ? Number(price) : product.price;
     product.category = category || product.category;
-    product.stock = stock || product.stock;
-    product.image = image || product.image;
+    product.stock = stock !== undefined ? Number(stock) : product.stock;
+    product.images = images || product.images;
+    product.featured = featured ?? product.featured;
 
     const updatedProduct = await product.save();
     res.json(updatedProduct);

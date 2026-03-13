@@ -15,8 +15,16 @@ const useAuthStore = create((set, get) => ({
     if (!token) return;
     set({ loading: true });
     try {
-      const { data } = await api.get("/users/profile"); // fetch profile
-      set({ user: data.data, token });
+      const { data } = await api.get("/auth/profile");
+          set({ 
+      user: {
+        _id: data._id,       
+        name: data.name,      
+        email: data.email,
+        role: data.role,  
+      }, 
+      token 
+    });
     } catch (err) {
       console.error(err);
       get().logout();

@@ -1,23 +1,12 @@
-
-
 import mongoose from "mongoose";
 
-
-const orderItemSchema = mongoose.Schema(
-  {
-    product: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Product",
-      required: true
-    },
-    name: { type: String, required: true },
-    qty: { type: Number, required: true, min: 1 },
-    price: { type: Number, required: true, min: 0 },
-    image: { type: String } 
-  },
-  { _id: false }
-);
-
+const orderItemSchema = mongoose.Schema({
+  product: { type: mongoose.Schema.Types.ObjectId, ref: "Product", required: true },
+  name: { type: String, required: true },
+  image: { type: String },
+  price: { type: Number, required: true },
+  quantity: { type: Number, required: true },
+});
 
 const shippingAddressSchema = mongoose.Schema(
   {
@@ -31,41 +20,36 @@ const shippingAddressSchema = mongoose.Schema(
 );
 
 
-const paymentResultSchema = mongoose.Schema(
-  {
-    id: { type: String },
-    status: { type: String },
-    update_time: { type: String },
-    email_address: { type: String }
-  },
-  { _id: false }
-);
+// const paymentResultSchema = mongoose.Schema(
+//   {
+//     id: { type: String },
+//     status: { type: String },
+//     update_time: { type: String },
+//     email_address: { type: String }
+//   },
+//   { _id: false }
+// );
 
 
 const orderSchema = mongoose.Schema(
   {
-    user: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true
-    },
-    items: [orderItemSchema],
+    user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+    orderItems: [orderItemSchema],
     shippingAddress: shippingAddressSchema,
-    paymentResult: paymentResultSchema,
-    itemsPrice: { type: Number, required: true, min: 0 },
-    taxPrice: { type: Number, required: true, min: 0 },
-    shippingPrice: { type: Number, required: true, min: 0 },
-    totalPrice: { type: Number, required: true, min: 0 },
+    paymentMethod: { type: String, default: "Cash on Delivery" },
     isPaid: { type: Boolean, default: false },
     paidAt: { type: Date },
-    isDelivered: { type: Boolean, default: false },
-    deliveredAt: { type: Date }
+    status: {
+      type: String,
+      enum: ["pending", "processing", "shipped", "delivered", "cancelled"],
+      default: "pending",
+    },
+    itemsPrice: { type: Number, required: true },
+    shippingPrice: { type: Number, default: 0 },
+    totalPrice: { type: Number, required: true },
   },
-  {
-    timestamps: true
-  }
+  { timestamps: true }
 );
 
-const Order = mongoose.models.Order || mongoose.model("Order", orderSchema);
-
+const Order = mongoose.model("Order", orderSchema);
 export default Order;

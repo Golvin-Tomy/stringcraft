@@ -9,6 +9,7 @@ import {
   resetPassword,
   getUserProfile,
   updateUserProfile,
+  changePassword,
   generateToken,
 } from "../controllers/authController.js";
 
@@ -39,6 +40,8 @@ router.get('/google/callback',
   }
 );
 
-
+router.get("/profile", protect, getUserProfile);
+router.put("/profile", protect, updateUserProfile);
+router.put("/change-password", protect, changePassword); 
 
 export default router;

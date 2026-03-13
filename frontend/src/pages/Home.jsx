@@ -9,25 +9,41 @@ const Home = () => {
   const [featured, setFeatured] = useState([]);
   const [topSellers, setTopSellers] = useState([]);
 
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const { data } = await axios.get("/api/products?limit=12");
-        const allProducts = data.data || [];
-        setProducts(allProducts);
-        setFeatured(allProducts.slice(0, 4));
-        setTopSellers([...allProducts].sort((a, b) => b.ratings - a.ratings).slice(0, 4)); // top 4 by ratings
-      } catch (err) {
-        console.error(err);
-      }
-    };
-    fetchProducts();
-  }, []);
+useEffect(() => {
+  const fetchProducts = async () => {
+    try {
+      const [allRes, featuredRes, topSellersRes] = await Promise.all([
+        axios.get("/api/products?limit=12"),
+        axios.get("/api/products?featured=true"),
+        axios.get("/api/products?sortBy=ratings&order=desc&limit=4"),  
+      ]);
+
+      setProducts(allRes.data.data || []);
+      setFeatured(featuredRes.data.data || []);
+      setTopSellers(topSellersRes.data.data || []);  
+    } catch (err) {
+      console.error(err);
+    }
+  };
+  fetchProducts();
+}, []);
 
   const categories = [
-    { name: "Electric", image: "https://i.pinimg.com/1200x/6e/ad/f1/6eadf1f2e6d7daac0a602c0d01cb0957.jpg" },
-    { name: "Acoustic", image: "https://i.pinimg.com/1200x/d2/8f/ce/d28fce348923ad255ee967e3ffc530aa.jpg" },
-    { name: "Ukulele", image: "https://i.pinimg.com/1200x/65/1c/df/651cdfa8affb5a70f366839c8988bd66.jpg" },
+    {
+      name: "Electric",
+      image:
+        "https://i.pinimg.com/1200x/6e/ad/f1/6eadf1f2e6d7daac0a602c0d01cb0957.jpg",
+    },
+    {
+      name: "Acoustic",
+      image:
+        "https://i.pinimg.com/1200x/d2/8f/ce/d28fce348923ad255ee967e3ffc530aa.jpg",
+    },
+    {
+      name: "Ukulele",
+      image:
+        "https://i.pinimg.com/1200x/65/1c/df/651cdfa8affb5a70f366839c8988bd66.jpg",
+    },
   ];
 
   return (

@@ -15,12 +15,14 @@ const AddProduct = () => {
     brand: "",
     stock: "",
     image: "",
+    featured: false,
   });
 
   const [uploading, setUploading] = useState(false);
 
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value, type, checked } = e.target;
+    setForm({ ...form, [name]: type === "checkbox" ? checked : value }); // ← handles checkbox
   };
 
   const handleImageUpload = async (e) => {
@@ -44,7 +46,7 @@ const AddProduct = () => {
           },
         },
       );
-      setForm({ ...form, image: data.urls[0] });
+      setForm((prev) => ({ ...prev, image: data.urls[0] }));
       addToast("Image uploaded!", "success");
     } catch (err) {
       console.error("UPLOAD ERROR:", err);
@@ -65,18 +67,22 @@ const AddProduct = () => {
 
     try {
       const token = localStorage.getItem("token");
-      await axios.post(
-        "http://localhost:5000/api/products",
-        {
-          ...form,
-          images: [{ url: form.image }],
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
-      );
+
+      const payload = {
+        name: form.name,
+        description: form.description,
+        price: Number(form.price),
+        category: form.category,
+        brand: form.brand,
+        stock: Number(form.stock),
+        images: [{ url: form.image }],
+        featured: form.featured,
+      };
+
+      await axios.post("http://localhost:5000/api/products", payload, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
       addToast("Guitar added successfully!", "success");
       navigate("/admin/products");
     } catch (err) {
@@ -195,6 +201,24 @@ const AddProduct = () => {
               <option value="acoustic">Acoustic Guitar</option>
               <option value="ukulele">Ukulele</option>
             </select>
+          </div>
+
+          {/* Featured Toggle */}
+          <div className="flex items-center gap-3">
+            <input
+              type="checkbox"
+              name="featured"
+              id="featured"
+              checked={form.featured}
+              onChange={handleChange}
+              className="w-5 h-5 accent-indigo-600 cursor-pointer"
+            />
+            <label
+              htmlFor="featured"
+              className="text-lg font-medium text-gray-700 cursor-pointer"
+            >
+              Mark as Featured
+            </label>
           </div>
 
           {/* Image Upload */}

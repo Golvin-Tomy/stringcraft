@@ -1,11 +1,12 @@
 import { useState } from "react";
-import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
 import { useToast } from "../../components/Toast.jsx";
+import useAuthStore from "../../state/authStore.js"; 
 
 const SignUp = () => {
   const navigate = useNavigate();
-  const { showToast } = useToast();
+  const { addToast } = useToast();
+  const signup = useAuthStore((state) => state.signup);  
 
   const [form, setForm] = useState({
     name: "",
@@ -23,25 +24,22 @@ const SignUp = () => {
     e.preventDefault();
 
     if (form.password !== form.confirmPassword) {
-      showToast("Passwords do not match", "error");
+      addToast("Passwords do not match", "error");
       return;
     }
 
     setLoading(true);
-    try {
-      const { data } = await axios.post("/api/auth/signup", {
-        name: form.name,
-        email: form.email,
-        password: form.password,
-      });
-      showToast("Account created successfully!", "success");
-      navigate("/signin");
-    } catch (err) {
-      showToast(err.response?.data?.error || "Signup failed", "error");
-    } finally {
-      setLoading(false);
+    const result = await signup(form.name, form.email, form.password);
+    if (result.success) {
+      addToast("Account created successfully!", "success");
+      navigate("/");  
+    } else {
+      addToast(result.error || "Signup failed", "error");
     }
+    setLoading(false);
   };
+
+
 
   return (
     <div className="max-w-md mx-auto mt-16 p-6 bg-white shadow rounded-lg">
