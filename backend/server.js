@@ -13,6 +13,7 @@ import orderRoutes from "./routes/orderRoutes.js";
 import uploadRoutes from "./routes/uploadRoutes.js";
 import paymentRoutes from "./routes/paymentRoutes.js";
 import reviewRoutes from "./routes/reviewRoutes.js";
+import userRoutes from "./routes/userRoutes.js"
 
 import passport from "./middleware/googleAuth.js";
 import session from "express-session";
@@ -68,7 +69,8 @@ app.use("/api/products", productRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/upload", uploadRoutes);
 app.use("/api/payments", paymentRoutes);
-app.use("/api/review", reviewRoutes);
+app.use("/api/reviews", reviewRoutes);
+app.use("/api/users", userRoutes)
 
 // 🔥 ERROR HANDLERS - LAST
 app.use(notFound);

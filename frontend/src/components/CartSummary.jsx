@@ -1,14 +1,17 @@
-
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
 const CartSummary = ({ cartItems }) => {
   const navigate = useNavigate();
 
-  const itemsPrice = cartItems.reduce((acc, item) => acc + item.price * item.qty, 0);
-  const taxPrice = +(itemsPrice * 0.1).toFixed(2); 
-  const shippingPrice = itemsPrice > 500 ? 0 : 25;
-  const totalPrice = +(itemsPrice + taxPrice + shippingPrice).toFixed(2);
+  const itemsPrice = cartItems.reduce(
+    (acc, item) => acc + item.price * item.qty,
+    0,
+  );
+  const taxPrice = +(itemsPrice * 0.1).toFixed(2);
+  const discountPrice = taxPrice;
+  const shippingPrice = itemsPrice > 500 ? 0 : 99;
+  const totalPrice = +(itemsPrice +taxPrice - discountPrice + shippingPrice).toFixed(2);
 
   return (
     <div className="bg-white border rounded-lg p-6 shadow-md">
@@ -16,19 +19,23 @@ const CartSummary = ({ cartItems }) => {
       <div className="space-y-2">
         <div className="flex justify-between">
           <span>Items:</span>
-          <span>${itemsPrice.toFixed(2)}</span>
+          <span>₹{itemsPrice.toFixed(2)}</span>
         </div>
         <div className="flex justify-between">
           <span>Tax (10%):</span>
-          <span>${taxPrice}</span>
+          <span>₹{taxPrice}</span>
+        </div>
+        <div className="flex justify-between text-green-600">
+          <span>Discount:</span>
+          <span>- ₹{discountPrice}</span>
         </div>
         <div className="flex justify-between">
           <span>Shipping:</span>
-          <span>${shippingPrice}</span>
+          <span>₹{shippingPrice}</span>
         </div>
         <div className="flex justify-between font-bold text-lg border-t pt-2">
           <span>Total:</span>
-          <span>${totalPrice}</span>
+          <span>₹{totalPrice}</span>
         </div>
       </div>
 

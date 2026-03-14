@@ -1,6 +1,5 @@
-
-
 import React from "react";
+import { Link } from "react-router-dom";
 
 const CartItem = ({ item, onUpdateQty, onRemove }) => {
   const handleQtyChange = (e) => {
@@ -11,15 +10,18 @@ const CartItem = ({ item, onUpdateQty, onRemove }) => {
   return (
     <div className="flex items-center justify-between border-b py-4">
       <div className="flex items-center space-x-4">
-        <img
-          src={item.image || "/placeholder.png"}
-          alt={item.name}
-          className="w-20 h-20 object-cover rounded"
-        />
+        <Link to={`/products/${item._id}`}>
+          <img
+            src={item.image || "/placeholder.png"}
+            alt={item.name}
+            className="w-20 h-20 object-cover rounded"
+          />
+        </Link>
+
         <div>
           <h4 className="font-semibold">{item.name}</h4>
           <p className="text-gray-500 text-sm">{item.type}</p>
-          <p className="text-gray-700 font-bold">${item.price}</p>
+          <p className="text-gray-700 font-bold">₹{item.price}.00</p>
         </div>
       </div>
 

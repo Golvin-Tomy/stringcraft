@@ -3,6 +3,7 @@ import { useAuthStore } from "./state/authStore";
 import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import { useEffect } from "react";
+import { setToken } from "./utils/auth.js";
 import ToastProvider from "./components/Toast.jsx";
 
 import Header from "./components/Header.jsx";
@@ -14,6 +15,7 @@ import ProductDetails from "./pages/ProductDetails.jsx";
 import Cart from "./pages/Cart.jsx";
 import Search from "../src/components/SearchBar.jsx";
 import About from "../src/pages/About.jsx";
+import Contact from "./pages/Contact.jsx";
 
 import SignIn from "./pages/Auth/SignIn.jsx";
 import SignUp from "./pages/Auth/SignUp.jsx";
@@ -38,34 +40,23 @@ import AdminRoute from "./routes/AdminRoute.jsx";
 const App = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { setState: setAuth, initUser } = useAuthStore();
+  const { initUser } = useAuthStore();
 
-    useEffect(() => {
+  useEffect(() => {
     initUser();
   }, []);
-  
+
   useEffect(() => {
     const urlParams = new URLSearchParams(location.search);
     const token = urlParams.get("token");
-    const authSuccess = urlParams.get("auth") === "success";
 
-    if (token && authSuccess) {
-      // ✅ Save token + user from OAuth
-      setAuth({
-        user: {
-          _id: "from-oauth",
-          name: "Google User",
-          email: "from-oauth",
-          role: "user",
-        },
-        token,
-      });
-
+    if (token) {
+      setToken(token);
+      useAuthStore.setState({ token });
+      initUser();
       navigate("/", { replace: true });
     }
-  }, [location.search, navigate, setAuth]);
-
-
+  }, [location.search]);
 
   const isAdminPage = location.pathname.startsWith("/admin");
   const isAuthPage =
@@ -91,8 +82,9 @@ const App = () => {
             <Route path="/signin" element={<SignIn />} />
             <Route path="/signup" element={<SignUp />} />
             <Route path="/about" element={<About />} />
+            <Route path="/contact" element={<Contact />} />
 
-            {/* 🔐 Protected (User) Routes */}
+            {/*  Protected (User) Routes */}
             <Route
               path="/checkout"
               element={
@@ -109,8 +101,16 @@ const App = () => {
                 </ProtectedRoute>
               }
             />
+            <Route
+              path="/account/orders"
+              element={
+                <ProtectedRoute>
+                  <Account />
+                </ProtectedRoute>
+              }
+            />
 
-            {/* 🛠️ Admin Routes */}
+            {/*  Admin Routes */}
 
             <Route
               path="/admin"
@@ -130,7 +130,7 @@ const App = () => {
               <Route path="reviews" element={<AdminReviews />} />
             </Route>
 
-            {/* 🚫 404 - Not Found */}
+            {/*  404 - Not Found */}
             <Route path="*" element={<NotFound />} />
           </Routes>
         </main>

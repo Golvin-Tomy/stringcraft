@@ -2,14 +2,15 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import RatingStars from "../components/RatingStars.jsx";
-import { useCart } from "../context/CartContext.jsx";
+import Reviews from "../components/Review.jsx";
+import useCartStore from "../state/cartStore.js";
 
 const ProductDetails = () => {
   const { id } = useParams();
   const [product, setProduct] = useState(null);
   const [toast, setToast] = useState(null);
   const [selectedQty, setSelectedQty] = useState(1);
-  const { addToCart } = useCart();
+  const { addItem } = useCartStore();
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -24,14 +25,12 @@ const ProductDetails = () => {
   }, [id]);
 
   const handleAddToCart = () => {
-    addToCart(product, selectedQty);
-
+    addItem(product, selectedQty);
     setToast({
       message: "Added to Cart!",
       name: product.name,
-      image: product.images?.[0],
+      image: product.images?.[0]?.url || "",
     });
-
     setTimeout(() => setToast(null), 3000);
   };
 
@@ -40,92 +39,70 @@ const ProductDetails = () => {
   return (
     <div className="space-y-8">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="space-y-2 flex justify-center">
+        {/* Image */}
+        <div className="flex justify-center">
           {product.images?.length > 0 ? (
             <img
-              src={product.images?.[0]?.url || "/placeholder.png"}
+              src={product.images[0].url}
               alt={product.name}
-              className="block w-[1000px] max-w-full h-auto mx-auto"
+              className="w-full max-w-lg h-auto rounded-xl object-cover shadow"
             />
           ) : (
-            <div className="w-full h-96 bg-gray-200 rounded-lg" />
+            <div className="w-full h-96 bg-gray-200 rounded-xl" />
           )}
         </div>
 
-        {/* Product info */}
+        {/* Product Info */}
         <div className="space-y-4">
           <h1 className="text-2xl font-bold">{product.name}</h1>
-          <RatingStars rating={product.ratings} />
+          <div className="flex items-center gap-2">
+            <RatingStars rating={product.ratings} />
+            <span className="text-sm text-gray-500">
+              {product.ratings > 0 ? `${product.ratings} / 5` : "No ratings yet"}
+            </span>
+          </div>
           <p className="text-gray-700">{product.description}</p>
-          <p className="text-xl font-semibold text-indigo-600">
-            ₹{product.price}
+          <p className="text-2xl font-bold text-gray-900">₹{product.price.toLocaleString()}</p>
+          <p className={`text-sm font-medium ${product.stock > 0 ? "text-green-600" : "text-red-500"}`}>
+            {product.stock > 0 ? `${product.stock} in stock` : "Out of stock"}
           </p>
-          <div className="flex items-center space-x-2">
-            <label>Qty:</label>
+          <div className="flex items-center gap-3">
+            <label className="text-sm font-medium text-gray-700">Qty:</label>
             <input
               type="number"
               min="1"
               max={product.stock}
               value={selectedQty}
               onChange={(e) => setSelectedQty(Number(e.target.value))}
-              className="w-16 border rounded px-2 py-1 text-center"
+              className="w-16 border rounded-lg px-2 py-1.5 text-center focus:outline-none focus:ring-2 focus:ring-black"
             />
           </div>
           <button
             onClick={handleAddToCart}
-            className="w-full md:w-auto bg-black text-white px-10 py-4 rounded-lg text-lg font-bold hover:bg-gray-800 transition"
+            disabled={product.stock === 0}
+            className="w-full md:w-auto bg-black text-white px-10 py-4 rounded-lg text-lg font-bold hover:bg-gray-800 transition disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Add to Cart
           </button>
         </div>
       </div>
 
-      {/* Reviews */}
-      <div className="bg-white border rounded-lg p-4">
-        <h2 className="text-xl font-semibold mb-4">Reviews</h2>
-        {product.reviews && product.reviews.length > 0 ? (
-          product.reviews.map((r) => (
-            <div key={r._id} className="border-b py-2">
-              <div className="flex items-center justify-between">
-                <span className="font-medium">
-                  {r.user?.name || "Anonymous"}
-                </span>
-                <RatingStars rating={r.rating} />
-              </div>
-              <p className="text-gray-700">{r.comment}</p>
-            </div>
-          ))
-        ) : (
-          <p className="text-gray-500">No reviews yet.</p>
-        )}
-      </div>
+      {/* Reviews — using the proper Reviews component */}
+      <Reviews productId={id} />  {/* ← replaces the old inline reviews section */}
 
+      {/* Toast */}
       {toast && (
-        <div className="fixed bottom-6 right-6 z-50 animate-bounce-in">
+        <div className="fixed bottom-6 right-6 z-50">
           <div className="bg-green-600 text-white rounded-lg shadow-2xl flex items-center p-4 max-w-sm">
-            <svg
-              className="w-10 h-10 mr-4 flex-shrink-0"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={3}
-                d="M5 13l4 4L19 7"
-              />
+            <svg className="w-10 h-10 mr-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
             </svg>
-            <div>
+            <div className="flex-1">
               <div className="font-bold text-lg">{toast.message}</div>
               <div className="text-sm opacity-90">{toast.name}</div>
             </div>
             {toast.image && (
-              <img
-                src={toast.image}
-                alt={toast.name}
-                className="w-16 h-16 object-cover rounded ml-4"
-              />
+              <img src={toast.image} alt={toast.name} className="w-16 h-16 object-cover rounded-lg ml-4" />
             )}
           </div>
         </div>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useCart } from "../context/CartContext";
+import useCartStore from "../state/cartStore";
 import useAuthStore from "../state/authStore";
 import {
   ShoppingCartIcon,
@@ -11,7 +11,7 @@ import {
 } from "@heroicons/react/24/outline";
 
 const Header = () => {
-  const { cartCount } = useCart();
+  const cartCount = useCartStore((state) => state.getTotalItems());
   const navigate = useNavigate();
   const { user, logout, initUser } = useAuthStore();
 

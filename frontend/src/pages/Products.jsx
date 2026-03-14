@@ -17,33 +17,64 @@ const Products = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
 
-  
-  const categories = ["All", "Electric", "Acoustic", "Ukulele"];
-  const brands = ["All", "Fender", "Gibson", "Yamaha", "Ibanez", "Kadence", "Kala", "Taylor", "Martin"];
+  const categories = [
+    { label: "All Categories", value: "" },
+    { label: "Electric", value: "electric" },
+    { label: "Acoustic", value: "acoustic" },
+    { label: "Ukulele", value: "ukulele" },
+  ];
+  const brands = [
+    { label: "All Brands", value: "" },
+    { label: "Fender", value: "Fender" },
+    { label: "Gibson", value: "Gibson" },
+    { label: "Yamaha", value: "Yamaha" },
+    { label: "Ibanez", value: "Ibanez" },
+    { label: "Kadence", value: "Kadence" },
+    { label: "Kala", value: "Kala" },
+    { label: "Taylor", value: "Taylor" },
+    { label: "Martin", value: "Martin" },
+  ];
 
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search);
     const urlSearch = queryParams.get("search") || "";
+    const urlCategory = queryParams.get("category") || "";
     setSearchTerm(urlSearch);
+    setFilters((prev) => ({ ...prev, category: urlCategory }));
     setCurrentPage(1);
   }, [location.search]);
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const query = new URLSearchParams({
-          category: filters.category === "All" ? "" : filters.category,
-          brand: filters.brand === "All" ? "" : filters.brand,
-          minPrice: filters.priceRange[0],
-          maxPrice: filters.priceRange[1],
-          sort,
+        const sortMap = {
+          latest: { sortBy: "createdAt", order: "desc" },
+          priceAsc: { sortBy: "price", order: "asc" },
+          priceDesc: { sortBy: "price", order: "desc" },
+          rating: { sortBy: "ratings", order: "desc" },
+        };
+        const { sortBy, order } = sortMap[sort] || sortMap.latest;
+
+        const params = new URLSearchParams({
           page: currentPage,
           limit: 12,
-          search: searchTerm,
-        }).toString();
+          sortBy,
+          order,
+        });
 
-        const { data } = await axios.get(`/api/products?${query}`);
-        setProducts(data.data || data.products || []);
+        // ← only add if not empty/All, and lowercase to match DB
+        if (filters.category && filters.category !== "All")
+          params.append("category", filters.category.toLowerCase());
+        if (filters.brand && filters.brand !== "All")
+          params.append("brand", filters.brand);
+        if (searchTerm) params.append("search", searchTerm);
+        if (filters.priceRange[0] > 0)
+          params.append("minPrice", filters.priceRange[0]);
+        if (filters.priceRange[1] < 200000)
+          params.append("maxPrice", filters.priceRange[1]);
+
+        const { data } = await axios.get(`/api/products?${params.toString()}`);
+        setProducts(data.data || []);
         setTotalPages(data.totalPages || 1);
       } catch (err) {
         console.error(err);
@@ -71,15 +102,19 @@ const Products = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {/* Category Dropdown */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Category
+            </label>
             <select
               value={filters.category}
-              onChange={(e) => setFilters({ ...filters, category: e.target.value })}
+              onChange={(e) =>
+                setFilters({ ...filters, category: e.target.value })
+              }
               className="w-full border rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500"
             >
               {categories.map((cat) => (
-                <option key={cat} value={cat}>
-                  {cat}
+                <option key={cat.value} value={cat.value}>
+                  {cat.label}
                 </option>
               ))}
             </select>
@@ -87,15 +122,19 @@ const Products = () => {
 
           {/* Brand Dropdown */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Brand</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Brand
+            </label>
             <select
               value={filters.brand}
-              onChange={(e) => setFilters({ ...filters, brand: e.target.value })}
+              onChange={(e) =>
+                setFilters({ ...filters, brand: e.target.value })
+              }
               className="w-full border rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500"
             >
-              {brands.map((brand) => (
-                <option key={brand} value={brand}>
-                  {brand}
+              {brands.map((b) => (
+                <option key={b.value} value={b.value}>
+                  {b.label}
                 </option>
               ))}
             </select>
@@ -103,7 +142,9 @@ const Products = () => {
 
           {/* Sort Dropdown */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Sort By</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Sort By
+            </label>
             <select
               value={sort}
               onChange={(e) => setSort(e.target.value)}
@@ -125,7 +166,11 @@ const Products = () => {
             <p className="text-2xl text-gray-600">No guitars found</p>
             <button
               onClick={() => {
-                setFilters({ category: "", brand: "", priceRange: [0, 200000] });
+                setFilters({
+                  category: "",
+                  brand: "",
+                  priceRange: [0, 200000],
+                });
                 setSort("latest");
               }}
               className="mt-6 text-indigo-600 underline text-lg"

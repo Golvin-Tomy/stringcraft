@@ -1,5 +1,3 @@
-
-
 import { create } from "zustand";
 
 // Helper to load/save cart from localStorage
@@ -22,13 +20,18 @@ const useCartStore = create((set, get) => ({
   // Add or update item
   addItem: (product, qty = 1) => {
     const existing = get().cartItems.find((item) => item._id === product._id);
+
+    const image = product.images?.[0]?.url || product.image || "";
+
+    const cartProduct = { ...product, image, qty };
+
     let updated;
     if (existing) {
       updated = get().cartItems.map((item) =>
-        item._id === product._id ? { ...item, qty: item.qty + qty } : item
+        item._id === product._id ? { ...item, qty: item.qty + qty } : item,
       );
     } else {
-      updated = [...get().cartItems, { ...product, qty }];
+      updated = [...get().cartItems, cartProduct];
     }
     set({ cartItems: updated });
     saveCart(updated);
@@ -44,7 +47,7 @@ const useCartStore = create((set, get) => ({
   // Update quantity
   updateQty: (productId, qty) => {
     const updated = get().cartItems.map((item) =>
-      item._id === productId ? { ...item, qty } : item
+      item._id === productId ? { ...item, qty } : item,
     );
     set({ cartItems: updated });
     saveCart(updated);

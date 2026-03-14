@@ -1,80 +1,81 @@
 import asyncHandler from "express-async-handler";
-import Order from "../models/orderModel.js"; 
+import Order from "../models/OrderModel.js";
+import Product from "../models/ProductModel.js"
 
-// Create new order (after payment)
+// Create order
 export const createOrder = asyncHandler(async (req, res) => {
-  const { items, shippingAddress, paymentResult } = req.body;
+  const { orderItems, shippingAddress, paymentMethod } = req.body;
 
-  if (!items || items.length === 0) {
+  if (!orderItems || orderItems.length === 0) {
     res.status(400);
     throw new Error("No order items");
   }
 
-  const itemsPrice = items.reduce((sum, item) => sum + item.price * item.qty, 0);
-  const taxPrice = parseFloat((itemsPrice * 0.1).toFixed(2));
-  const shippingPrice = itemsPrice > 200 ? 0 : 20;
-  const totalPrice = itemsPrice + taxPrice + shippingPrice;
+  // Calculate prices
+  const itemsPrice = orderItems.reduce(
+    (acc, item) => acc + item.price * item.quantity, 0
+  );
+  const shippingPrice = itemsPrice > 500 ? 0 : 99; 
+  const totalPrice = itemsPrice + shippingPrice;
 
-  const order = new Order({
+  const order = await Order.create({
     user: req.user._id,
-    items,
+    orderItems,
     shippingAddress,
+    paymentMethod: paymentMethod || "Cash on Delivery",
     itemsPrice,
-    taxPrice,
     shippingPrice,
     totalPrice,
-    paymentResult,
-    isPaid: paymentResult?.status === "succeeded",
-    paidAt: paymentResult?.status === "succeeded" ? Date.now() : null,
   });
 
-  const createdOrder = await order.save();
-  res.status(201).json({ success: true, data: createdOrder });
+  res.status(201).json({ success: true, data: order });
 });
 
-
+// Get logged in user's orders
 export const getMyOrders = asyncHandler(async (req, res) => {
-  const orders = await Order.find({ user: req.user._id });
+  const orders = await Order.find({ user: req.user._id }).sort({ createdAt: -1 });
   res.json({ success: true, data: orders });
 });
 
-
+// Get single order by ID
 export const getOrderById = asyncHandler(async (req, res) => {
   const order = await Order.findById(req.params.id).populate("user", "name email");
-  if (order) {
-    if (order.user._id.toString() === req.user._id.toString() || req.user.isAdmin) {
-      res.json({ success: true, data: order });
-    } else {
-      res.status(403);
-      throw new Error("Not authorized to view this order");
-    }
-  } else {
+
+  if (!order) {
     res.status(404);
     throw new Error("Order not found");
   }
+
+  
+  if (order.user._id.toString() !== req.user._id.toString() && req.user.role !== "admin") {
+    res.status(401);
+    throw new Error("Not authorized");
+  }
+
+  res.json({ success: true, data: order });
 });
 
-
+// Admin: get all orders
 export const getAllOrders = asyncHandler(async (req, res) => {
-  const orders = await Order.find().populate("user", "name email");
-  res.json({ success: true, count: orders.length, data: orders });
+  const orders = await Order.find().populate("user", "name email").sort({ createdAt: -1 });
+  res.json({ success: true, data: orders });
 });
 
-
+// Admin: update order status
 export const updateOrderStatus = asyncHandler(async (req, res) => {
-  const { isPaid, isDelivered } = req.body;
   const order = await Order.findById(req.params.id);
-
-  if (order) {
-    if (isPaid !== undefined) order.isPaid = isPaid;
-    if (isDelivered !== undefined) order.isDelivered = isDelivered;
-    if (isDelivered) order.deliveredAt = Date.now();
-    if (isPaid) order.paidAt = Date.now();
-
-    const updatedOrder = await order.save();
-    res.json({ success: true, data: updatedOrder });
-  } else {
+  if (!order) {
     res.status(404);
     throw new Error("Order not found");
   }
+
+  order.status = req.body.status || order.status;
+
+  if (req.body.status === "delivered") {
+    order.isPaid = true;
+    order.paidAt = Date.now();
+  }
+
+  const updatedOrder = await order.save();
+  res.json({ success: true, data: updatedOrder });
 });
