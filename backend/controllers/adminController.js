@@ -1,10 +1,10 @@
 // controllers/adminController.js
 import asyncHandler from "express-async-handler";
-import User from "../models/UserModel.js";
+import User from "../models/userModel.js";
 import Product from "../models/productModel.js";
-import Order from "../models/OrderModel.js";
-import Cart from "../models/CartModel.js";
-import Review from "../models/ReviewModel.js";
+import Order from "../models/orderModel.js";
+import Cart from "../models/cartModel.js";
+import Review from "../models/reviewModel.js";
 
 const getDashboardStats = asyncHandler(async (req, res) => {
   const [

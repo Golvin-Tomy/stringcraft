@@ -1,6 +1,6 @@
 import asyncHandler from "express-async-handler";
-import Review from "../models/ReviewModel.js";
-import Product from "../models/ProductModel.js";
+import Review from "../models/reviewModel.js";
+import Product from "../models/productModel.js";
 
 export const getProductReviews = asyncHandler(async (req, res) => {
   const reviews = await Review.find({
