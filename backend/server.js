@@ -14,6 +14,7 @@ import uploadRoutes from "./routes/uploadRoutes.js";
 import paymentRoutes from "./routes/paymentRoutes.js";
 import reviewRoutes from "./routes/reviewRoutes.js";
 import userRoutes from "./routes/userRoutes.js"
+import wishlistRoutes from "./routes/wishlistRoutes.js";
 
 import passport from "./middleware/googleAuth.js";
 import session from "express-session";
@@ -51,7 +52,7 @@ app.use(session({
   saveUninitialized: false,
   store: MongoStore.create({ mongoUrl: process.env.MONGO_URI }),
   cookie: {
-    secure: false, // Set true in production HTTPS
+    secure: false, 
     httpOnly: true,
     maxAge: 30 * 24 * 60 * 60 * 1000,
     sameSite: 'lax'
@@ -70,7 +71,8 @@ app.use("/api/orders", orderRoutes);
 app.use("/api/upload", uploadRoutes);
 app.use("/api/payments", paymentRoutes);
 app.use("/api/reviews", reviewRoutes);
-app.use("/api/users", userRoutes)
+app.use("/api/users", userRoutes);
+app.use("/api/wishlist", wishlistRoutes);
 
 // 🔥 ERROR HANDLERS - LAST
 app.use(notFound);

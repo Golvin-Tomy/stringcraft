@@ -16,6 +16,7 @@ import Cart from "./pages/Cart.jsx";
 import Search from "../src/components/SearchBar.jsx";
 import About from "../src/pages/About.jsx";
 import Contact from "./pages/Contact.jsx";
+import Wishlist from "./pages/Wishlist.jsx";
 
 import SignIn from "./pages/Auth/SignIn.jsx";
 import SignUp from "./pages/Auth/SignUp.jsx";
@@ -106,6 +107,14 @@ const App = () => {
               element={
                 <ProtectedRoute>
                   <Account />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/wishlist"
+              element={
+                <ProtectedRoute>
+                  <Wishlist />
                 </ProtectedRoute>
               }
             />

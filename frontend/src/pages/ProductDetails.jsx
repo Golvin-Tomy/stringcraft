@@ -1,16 +1,28 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import RatingStars from "../components/RatingStars.jsx";
 import Reviews from "../components/Review.jsx";
 import useCartStore from "../state/cartStore.js";
+import { HeartIcon } from "@heroicons/react/24/outline";
+import { HeartIcon as HeartSolid } from "@heroicons/react/24/solid";
+import useWishlistStore from "../state/wishlistStore";
+import useAuthStore from "../state/authStore";
 
 const ProductDetails = () => {
+
   const { id } = useParams();
+  const navigate = useNavigate();
+
   const [product, setProduct] = useState(null);
   const [toast, setToast] = useState(null);
   const [selectedQty, setSelectedQty] = useState(1);
+
   const { addItem } = useCartStore();
+  const { isWishlisted, toggleWishlist } = useWishlistStore();
+  const { user } = useAuthStore();
+
+  const wishlisted = isWishlisted(product?._id);
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -21,17 +33,29 @@ const ProductDetails = () => {
         console.error(err);
       }
     };
+
     fetchProduct();
   }, [id]);
 
   const handleAddToCart = () => {
     addItem(product, selectedQty);
+
     setToast({
       message: "Added to Cart!",
       name: product.name,
       image: product.images?.[0]?.url || "",
     });
+
     setTimeout(() => setToast(null), 3000);
+  };
+
+  const handleWishlist = async () => {
+    if (!user) {
+      navigate("/signin");
+      return;
+    }
+
+    await toggleWishlist(product._id);
   };
 
   if (!product) return <p className="text-center py-10">Loading...</p>;
@@ -39,6 +63,7 @@ const ProductDetails = () => {
   return (
     <div className="space-y-8">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
         {/* Image */}
         <div className="flex justify-center">
           {product.images?.length > 0 ? (
@@ -54,20 +79,39 @@ const ProductDetails = () => {
 
         {/* Product Info */}
         <div className="space-y-4">
+
           <h1 className="text-2xl font-bold">{product.name}</h1>
+
           <div className="flex items-center gap-2">
             <RatingStars rating={product.ratings} />
             <span className="text-sm text-gray-500">
-              {product.ratings > 0 ? `${product.ratings} / 5` : "No ratings yet"}
+              {product.ratings > 0
+                ? `${product.ratings} / 5`
+                : "No ratings yet"}
             </span>
           </div>
+
           <p className="text-gray-700">{product.description}</p>
-          <p className="text-2xl font-bold text-gray-900">₹{product.price.toLocaleString()}</p>
-          <p className={`text-sm font-medium ${product.stock > 0 ? "text-green-600" : "text-red-500"}`}>
-            {product.stock > 0 ? `${product.stock} in stock` : "Out of stock"}
+
+          <p className="text-2xl font-bold text-gray-900">
+            ₹{product.price.toLocaleString()}
           </p>
+
+          <p
+            className={`text-sm font-medium ${
+              product.stock > 0 ? "text-green-600" : "text-red-500"
+            }`}
+          >
+            {product.stock > 0
+              ? `${product.stock} in stock`
+              : "Out of stock"}
+          </p>
+
           <div className="flex items-center gap-3">
-            <label className="text-sm font-medium text-gray-700">Qty:</label>
+            <label className="text-sm font-medium text-gray-700">
+              Qty:
+            </label>
+
             <input
               type="number"
               min="1"
@@ -77,33 +121,67 @@ const ProductDetails = () => {
               className="w-16 border rounded-lg px-2 py-1.5 text-center focus:outline-none focus:ring-2 focus:ring-black"
             />
           </div>
-          <button
-            onClick={handleAddToCart}
-            disabled={product.stock === 0}
-            className="w-full md:w-auto bg-black text-white px-10 py-4 rounded-lg text-lg font-bold hover:bg-gray-800 transition disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            Add to Cart
-          </button>
+
+          <div className="flex gap-3">
+
+            <button
+              onClick={handleAddToCart}
+              disabled={product.stock === 0}
+              className="flex-1 bg-black text-white px-10 py-4 rounded-lg text-lg font-bold hover:bg-gray-800 transition disabled:opacity-50"
+            >
+              Add to Cart
+            </button>
+
+            <button
+              onClick={handleWishlist}
+              className="p-4 border-2 border-gray-200 rounded-lg hover:border-red-300 hover:bg-red-50 transition"
+            >
+              {wishlisted ? (
+                <HeartSolid className="w-6 h-6 text-red-500" />
+              ) : (
+                <HeartIcon className="w-6 h-6 text-gray-400 hover:text-red-500 transition" />
+              )}
+            </button>
+
+          </div>
         </div>
       </div>
 
-      {/* Reviews — using the proper Reviews component */}
-      <Reviews productId={id} />  {/* ← replaces the old inline reviews section */}
+      {/* Reviews */}
+      <Reviews productId={id} />
 
       {/* Toast */}
       {toast && (
         <div className="fixed bottom-6 right-6 z-50">
           <div className="bg-green-600 text-white rounded-lg shadow-2xl flex items-center p-4 max-w-sm">
-            <svg className="w-10 h-10 mr-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+
+            <svg
+              className="w-10 h-10 mr-4 flex-shrink-0"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={3}
+                d="M5 13l4 4L19 7"
+              />
             </svg>
+
             <div className="flex-1">
               <div className="font-bold text-lg">{toast.message}</div>
               <div className="text-sm opacity-90">{toast.name}</div>
             </div>
+
             {toast.image && (
-              <img src={toast.image} alt={toast.name} className="w-16 h-16 object-cover rounded-lg ml-4" />
+              <img
+                src={toast.image}
+                alt={toast.name}
+                className="w-16 h-16 object-cover rounded-lg ml-4"
+              />
             )}
+
           </div>
         </div>
       )}

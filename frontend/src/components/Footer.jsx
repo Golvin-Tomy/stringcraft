@@ -21,7 +21,7 @@ const Footer = () => {
             musician.
           </p>
           <p className="mt-3 text-sm">📧 support@stringcraft.com</p>
-          <p className="text-sm">📞 +91 12345 67890</p>
+          <p className="text-sm">📞 +91 9876543210</p>
 
           <div className="flex space-x-4 mt-4">
             <a
