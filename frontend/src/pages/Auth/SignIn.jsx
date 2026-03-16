@@ -5,38 +5,36 @@ import toast from "react-hot-toast";
 
 const SignIn = () => {
   const navigate = useNavigate();
-  const login = useAuthStore(state => state.login);
-   const user = useAuthStore(state => state.user); 
+  const login = useAuthStore((state) => state.login);
+  const user = useAuthStore((state) => state.user);
   const [form, setForm] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
 
-  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+  const handleChange = (e) =>
+    setForm({ ...form, [e.target.name]: e.target.value });
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  setLoading(true);
-  
-  const result = await login(form.email, form.password);
-  
-  if (result.success) {
-    toast.success("Logged in successfully!");
-    
-    
-      setTimeout(() => {  
-        if (user?.role === 'admin') {
-          navigate("/admin", { replace: true }); 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    const result = await login(form.email, form.password);
+
+    if (result.success) {
+      toast.success("Logged in successfully!");
+
+      setTimeout(() => {
+        if (user?.role === "admin") {
+          navigate("/admin", { replace: true });
         } else {
-          navigate("/", { replace: true });      
+          navigate("/", { replace: true });
         }
       }, 100);
     } else {
       toast.error(result.error || "Login failed");
     }
-    
+
     setLoading(false);
   };
-
-
 
   return (
     <div className="max-w-md mx-auto mt-16 p-6 bg-white shadow rounded-lg">
@@ -60,6 +58,32 @@ const handleSubmit = async (e) => {
           className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
           required
         />
+        
+        {/* Demo Credentials */}
+        <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
+            Demo Account
+          </p>
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-gray-600">
+                <span className="font-medium">Email:</span> demo@stringcraft.com
+              </p>
+              <p className="text-sm text-gray-600">
+                <span className="font-medium">Password:</span> demo1234
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() =>
+                setForm({ email: "demo@stringcraft.com", password: "demo1234" })
+              }
+              className="bg-black text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-gray-800 transition"
+            >
+              Use Demo
+            </button>
+          </div>
+        </div>
         <button
           type="submit"
           disabled={loading}
