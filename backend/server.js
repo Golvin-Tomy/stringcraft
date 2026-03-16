@@ -25,27 +25,30 @@ connectDB();
 
 const app = express();
 
-// 🔥 CORS - EXACTLY LIKE THIS (NO CHANGES)
+//  CORS
 app.use(cors({
-  origin: 'http://localhost:5173', 
+  origin: [
+    'http://localhost:5173',
+    'https://stringcraft.vercel.app',
+  ],
   credentials: true,
   optionsSuccessStatus: 200
 }));
 
-// 🔥 BODY PARSERS
+// BODY PARSERS
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true }));
 
-// 🔥 SECURITY & LOGGING
+// SECURITY & LOGGING
 app.use(helmet());
 app.use(morgan("dev"));
 
-// 🔥 ROOT ROUTE
+// ROOT ROUTE
 app.get("/", (req, res) => {
   res.json({ success: true, message: "StringCraft API 🚀" });
 });
 
-// 🔥 SESSION
+//  SESSION
 app.use(session({
   secret: process.env.JWT_SECRET || "your_jwt_secret_here",
   resave: false,
@@ -59,11 +62,11 @@ app.use(session({
   }
 }));
 
-// 🔥 PASSPORT
+//  PASSPORT
 app.use(passport.initialize());
 app.use(passport.session());
 
-// 🔥 ROUTES
+//  ROUTES
 app.use("/api/admin", adminRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/products", productRoutes);
@@ -74,7 +77,7 @@ app.use("/api/reviews", reviewRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/wishlist", wishlistRoutes);
 
-// 🔥 ERROR HANDLERS - LAST
+//  ERROR HANDLERS - LAST
 app.use(notFound);
 app.use(errorHandler);
 
