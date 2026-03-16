@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import ProductList from "../components/ProductList.jsx";
 import { Link } from "react-router-dom";
-import axios from "axios";
+import api from "../services/api.js";
 import { ChevronRightIcon } from "@heroicons/react/24/solid";
 
 const Home = () => {
@@ -13,9 +13,9 @@ useEffect(() => {
   const fetchProducts = async () => {
     try {
       const [allRes, featuredRes, topSellersRes] = await Promise.all([
-        axios.get("/api/products?limit=12"),
-        axios.get("/api/products?featured=true"),
-        axios.get("/api/products?sortBy=ratings&order=desc&limit=4"),  
+        api.get("/products?limit=12"),
+        api.get("/products?featured=true"),
+        api.get("/products?sortBy=ratings&order=desc&limit=4"),  
       ]);
 
       setProducts(allRes.data.data || []);

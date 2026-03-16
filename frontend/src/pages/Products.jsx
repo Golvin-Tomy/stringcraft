@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import axios from "axios";
+import api from "../services/api.js";
 import ProductList from "../components/ProductList.jsx";
 import Pagination from "../components/Pagination.jsx";
 
@@ -73,7 +73,7 @@ const Products = () => {
         if (filters.priceRange[1] < 200000)
           params.append("maxPrice", filters.priceRange[1]);
 
-        const { data } = await axios.get(`/api/products?${params.toString()}`);
+        const { data } = await api.get(`/products?${params.toString()}`);
         setProducts(data.data || []);
         setTotalPages(data.totalPages || 1);
       } catch (err) {

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import api from "../../services/api.js";
 import { useToast } from "../../components/Toast.jsx";
 
 const AddProduct = () => {
@@ -32,20 +32,11 @@ const AddProduct = () => {
     const formData = new FormData();
     formData.append("images", file);
 
-    const token = localStorage.getItem("token");
-
     setUploading(true);
     try {
-      const { data } = await axios.post(
-        "http://localhost:5000/api/upload",
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-            Authorization: `Bearer ${token}`,
-          },
-        },
-      );
+      const { data } = await api.post("/upload", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
       setForm((prev) => ({ ...prev, image: data.urls[0] }));
       addToast("Image uploaded!", "success");
     } catch (err) {
@@ -66,8 +57,6 @@ const AddProduct = () => {
     }
 
     try {
-      const token = localStorage.getItem("token");
-
       const payload = {
         name: form.name,
         description: form.description,
@@ -79,9 +68,7 @@ const AddProduct = () => {
         featured: form.featured,
       };
 
-      await axios.post("http://localhost:5000/api/products", payload, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await api.post("/products", payload);
 
       addToast("Guitar added successfully!", "success");
       navigate("/admin/products");

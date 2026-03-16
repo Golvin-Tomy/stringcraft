@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import axios from "axios";
+import api from "../services/api.js";
 import RatingStars from "../components/RatingStars.jsx";
 import Reviews from "../components/Review.jsx";
 import useCartStore from "../state/cartStore.js";
@@ -27,7 +27,7 @@ const ProductDetails = () => {
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        const { data } = await axios.get(`/api/products/${id}`);
+        const { data } = await api.get(`/products/${id}`);
         setProduct(data);
       } catch (err) {
         console.error(err);

@@ -1,5 +1,3 @@
-
-
 import axios from "axios";
 import { getToken, logout } from "../utils/auth.js"; // helper to get JWT from localStorage or context
 
@@ -21,7 +19,7 @@ api.interceptors.request.use(
     }
     return config;
   },
-  (error) => Promise.reject(error)
+  (error) => Promise.reject(error),
 );
 
 // Response interceptor: handle 401 / token expiration
@@ -36,7 +34,7 @@ api.interceptors.response.use(
       window.location.href = "/signin";
     }
     return Promise.reject(error);
-  }
+  },
 );
 
 export default api;
