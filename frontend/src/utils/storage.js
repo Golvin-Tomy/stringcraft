@@ -1,5 +1,3 @@
-
-
 export const getToken = () => {
   try {
     return localStorage.getItem("token");
@@ -23,8 +21,6 @@ export const removeToken = () => {
     console.warn("Failed to remove token");
   }
 };
-
-/* ---------------- CART ---------------- */
 
 export const getCart = () => {
   try {

@@ -3,11 +3,11 @@ import { Navigate } from "react-router-dom";
 import useAuthStore from "../state/authStore";
 
 const AdminRoute = ({ children }) => {
-  const { user, token } = useAuthStore();  // ✅ ADD TOKEN CHECK
+  const { user, token } = useAuthStore();  
 
-  console.log('AdminRoute check:', { user: user?.email, hasToken: !!token });  // ✅ DEBUG
+  console.log('AdminRoute check:', { user: user?.email, hasToken: !!token });  
 
-  if (!user || !token) {  // ✅ BOTH REQUIRED
+  if (!user || !token) {  
     console.log('❌ No user/token - redirect to signin');
     return <Navigate to="/signin" replace />;
   }

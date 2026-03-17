@@ -1,4 +1,3 @@
-// routes/adminRoutes.js
 import express from "express";
 import asyncHandler from "express-async-handler";
 import { protect, admin } from "../middleware/authMiddleware.js";
@@ -61,7 +60,6 @@ router.put(
     // update stock instead of quantity
     product.stock = req.body.quantity || product.stock;
 
-    // save uploaded image
     if (req.body.imageUrl) {
       product.images = [
         {
@@ -73,7 +71,7 @@ router.put(
     const updatedProduct = await product.save();
 
     res.json(updatedProduct);
-  })
+  }),
 );
 router.delete(
   "/products/:id",

@@ -6,7 +6,7 @@ import RatingStars from "./RatingStars.jsx";
 
 const Reviews = ({ productId }) => {
   const { user } = useAuthStore();
-  const { addToast } = useToast();  // ← fixed: addToast not showToast
+  const { addToast } = useToast();  
 
   const [reviews, setReviews] = useState([]);
   const [rating, setRating] = useState(0);

@@ -27,8 +27,7 @@ const SearchBar = () => {
       } finally {
         setLoading(false);
       }
-    }, 300); // debounce 300ms
-
+    }, 300); 
     return () => clearTimeout(timer);
   }, [query]);
 

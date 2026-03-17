@@ -22,7 +22,7 @@ const cartSchema = mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
-      unique: true // one cart per user
+      unique: true 
     },
     items: [cartItemSchema],
     itemsPrice: { type: Number, default: 0, min: 0 },

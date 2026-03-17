@@ -3,7 +3,7 @@ import React, { createContext, useContext, useState, useEffect } from "react";
 // Create Cart Context
 const CartContext = createContext();
 
-// Hook for easier access
+
 export const useCart = () => useContext(CartContext);
 
 // Provider component

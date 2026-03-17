@@ -9,7 +9,7 @@ import {
   PencilSquareIcon,
   CheckIcon,
 } from "@heroicons/react/24/outline";
-import { useLocation, useNavigate } from "react-router-dom"; // ← fix 1: combined import
+import { useLocation, useNavigate } from "react-router-dom"; 
 
 const TABS = [
   { id: "profile", label: "Profile", icon: UserCircleIcon },
@@ -19,11 +19,11 @@ const TABS = [
 
 const Account = () => {
   const location = useLocation();
-  const navigate = useNavigate(); // ← fix 2: moved INSIDE component
+  const navigate = useNavigate(); 
   const { user, updateUser } = useAuthStore();
   const { addToast } = useToast();
 
-  // ← fix 3: removed the quotes around the ternary expression
+  
   const [activeTab, setActiveTab] = useState(
     location.pathname === "/account/orders" ? "orders" : "profile"
   );
@@ -154,7 +154,7 @@ const Account = () => {
                 return (
                   <button
                     key={tab.id}
-                    onClick={() => handleTabChange(tab.id)} // ← uses handleTabChange
+                    onClick={() => handleTabChange(tab.id)} 
                     className={`w-full flex items-center gap-3 px-5 py-4 text-sm font-medium transition border-l-2 ${
                       activeTab === tab.id
                         ? "border-black bg-gray-50 text-black"

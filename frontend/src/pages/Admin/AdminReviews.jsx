@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from "react";
-import api from "../../services/api.js";           // ← use api instance
+import api from "../../services/api.js";          
 import { useToast } from "../../components/Toast.jsx";
 
 const AdminReviews = () => {
-  const { addToast } = useToast();                 // ← addToast not showToast
+  const { addToast } = useToast();                 
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const fetchReviews = async () => {
     setLoading(true);
     try {
-      const { data } = await api.get("/reviews/admin/all");  // ← correct route
+      const { data } = await api.get("/reviews/admin/all");  
       setReviews(data.data || []);
     } catch (err) {
       addToast(err.response?.data?.message || "Failed to load reviews", "error");

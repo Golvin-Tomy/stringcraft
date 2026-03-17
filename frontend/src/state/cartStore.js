@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-// Helper to load/save cart from localStorage
+
 const loadCart = () => {
   try {
     const stored = localStorage.getItem("cart");

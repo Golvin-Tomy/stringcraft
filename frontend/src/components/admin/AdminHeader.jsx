@@ -1,13 +1,13 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../context/AuthContext.jsx"; // ← your AuthContext
+import { useAuth } from "../../context/AuthContext.jsx"; 
 
 const AdminHeader = () => {
   const navigate = useNavigate();
-  const { user, logout } = useAuth(); // ← get user & logout from context
+  const { user, logout } = useAuth(); 
 
   const handleLogout = () => {
-    logout(); // ← this clears context + localStorage + cookie
+    logout(); 
     navigate("/signin");
   };
 

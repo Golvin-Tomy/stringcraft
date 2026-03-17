@@ -1,5 +1,3 @@
-
-
 import { create } from "zustand";
 import api from "../services/api.js"; // Axios instance
 import { setToken, getToken, logout as clearToken } from "../utils/auth.js";
@@ -9,22 +7,21 @@ const useAuthStore = create((set, get) => ({
   token: getToken() || null,
   loading: false,
 
-  // Initialize user from token
   initUser: async () => {
     const token = getToken();
     if (!token) return;
     set({ loading: true });
     try {
       const { data } = await api.get("/auth/profile");
-          set({ 
-      user: {
-        _id: data._id,       
-        name: data.name,      
-        email: data.email,
-        role: data.role,  
-      }, 
-      token 
-    });
+      set({
+        user: {
+          _id: data._id,
+          name: data.name,
+          email: data.email,
+          role: data.role,
+        },
+        token,
+      });
     } catch (err) {
       console.error(err);
       get().logout();
@@ -34,50 +31,60 @@ const useAuthStore = create((set, get) => ({
   },
 
   // Login
-login: async (email, password) => {
-  set({ loading: true });
-  try {
-    const { data } = await api.post("/auth/login", { email, password });
-    set({ 
-      user: {
-        _id: data.data._id,
-        name: data.data.name,
-        email: data.data.email,
-        role: data.data.role.toLowerCase()
-      }, 
-      token: data.data.token 
-    });
-    setToken(data.data.token);
-    return { success: true };
-  } catch (err) {
-    return { success: false, error: err.response?.data?.message || "Login failed" };
-  } finally {
-    set({ loading: false });
-  }
-},
+  login: async (email, password) => {
+    set({ loading: true });
+    try {
+      const { data } = await api.post("/auth/login", { email, password });
+      set({
+        user: {
+          _id: data.data._id,
+          name: data.data.name,
+          email: data.data.email,
+          role: data.data.role.toLowerCase(),
+        },
+        token: data.data.token,
+      });
+      setToken(data.data.token);
+      return { success: true };
+    } catch (err) {
+      return {
+        success: false,
+        error: err.response?.data?.message || "Login failed",
+      };
+    } finally {
+      set({ loading: false });
+    }
+  },
 
   // Signup
-signup: async (name, email, password) => {
-  set({ loading: true });
-  try {
-    const { data } = await api.post("/auth/signup", { name, email, password });
-    set({ 
-      user: {
-        _id: data.data._id,
-        name: data.data.name,
-        email: data.data.email,
-        role: data.data.role.toLowerCase()
-      }, 
-      token: data.data.token 
-    });
-    setToken(data.data.token);
-    return { success: true };
-  } catch (err) {
-    return { success: false, error: err.response?.data?.message || "Signup failed" };
-  } finally {
-    set({ loading: false });
-  }
-},
+  signup: async (name, email, password) => {
+    set({ loading: true });
+    try {
+      const { data } = await api.post("/auth/signup", {
+        name,
+        email,
+        password,
+      });
+      set({
+        user: {
+          _id: data.data._id,
+          name: data.data.name,
+          email: data.data.email,
+          role: data.data.role.toLowerCase(),
+        },
+        token: data.data.token,
+      });
+      setToken(data.data.token);
+      return { success: true };
+    } catch (err) {
+      return {
+        success: false,
+        error: err.response?.data?.message || "Signup failed",
+      };
+    } finally {
+      set({ loading: false });
+    }
+  },
 
   // Logout
   logout: () => {
@@ -85,7 +92,6 @@ signup: async (name, email, password) => {
     clearToken();
   },
 
-  // Update user profile locally
   updateUser: (updatedUser) => set({ user: updatedUser }),
 }));
 

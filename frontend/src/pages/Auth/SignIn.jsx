@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import useAuthStore from "../../state/authStore.js"; // Uses your api internally
+import useAuthStore from "../../state/authStore.js"; 
 import toast from "react-hot-toast";
 
 const SignIn = () => {

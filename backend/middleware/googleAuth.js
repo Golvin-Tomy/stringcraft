@@ -28,11 +28,10 @@ passport.use(
       });
 
       done(null, newUser);
-    }
-  )
+    },
+  ),
 );
 
-// Serialize user into session (we'll use JWT instead, but passport needs this)
 passport.serializeUser((user, done) => done(null, user.id));
 passport.deserializeUser(async (id, done) => {
   const user = await User.findById(id);

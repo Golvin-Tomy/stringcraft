@@ -36,7 +36,7 @@ router.get('/google/callback',
   passport.authenticate('google', { session: false }),
   (req, res) => {
     const token = generateToken(req.user._id);
-    res.redirect(`${process.env.CLIENT_URL}/?token=${token}`);  // ✅ HOMEPAGE
+    res.redirect(`${process.env.CLIENT_URL}/?token=${token}`); 
   }
 );
 

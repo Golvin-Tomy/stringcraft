@@ -129,6 +129,6 @@ const updateProductRating = async (productId) => {
     : 0;
 
   await Product.findByIdAndUpdate(productId, {
-    ratings: Math.round(avg * 10) / 10,  // round to 1 decimal
+    ratings: Math.round(avg * 10) / 10,  
   });
 };

@@ -2,7 +2,7 @@ import { create } from "zustand";
 import api from "../services/api.js";
 
 const useWishlistStore = create((set, get) => ({
-  items: [],        // array of full product objects
+  items: [],
   loading: false,
 
   // Fetch wishlist from DB
@@ -19,8 +19,7 @@ const useWishlistStore = create((set, get) => ({
   },
 
   // Check if product is wishlisted
-  isWishlisted: (productId) =>
-    get().items.some((p) => p._id === productId),
+  isWishlisted: (productId) => get().items.some((p) => p._id === productId),
 
   // Toggle wishlist
   toggleWishlist: async (productId) => {
@@ -31,7 +30,7 @@ const useWishlistStore = create((set, get) => ({
         set({ items: get().items.filter((p) => p._id !== productId) });
       } else {
         await api.post("/wishlist", { productId });
-        // refetch to get full product data
+
         const { data } = await api.get("/wishlist");
         set({ items: data.data || [] });
       }

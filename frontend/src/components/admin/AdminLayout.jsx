@@ -1,7 +1,6 @@
-// src/layouts/AdminLayout.jsx
-import { Outlet } from 'react-router-dom';
-import AdminHeader from "./AdminHeader" 
-import AdminSidebar from "./AdminSidebar"
+import { Outlet } from "react-router-dom";
+import AdminHeader from "./AdminHeader";
+import AdminSidebar from "./AdminSidebar";
 
 export default function AdminLayout() {
   return (
@@ -10,7 +9,7 @@ export default function AdminLayout() {
       <div className="flex">
         <AdminSidebar className="w-64 hidden md:block" />
         <main className="flex-1 p-6">
-          <Outlet />           
+          <Outlet />
         </main>
       </div>
     </div>

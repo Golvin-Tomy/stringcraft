@@ -22,7 +22,7 @@ const AddProduct = () => {
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setForm({ ...form, [name]: type === "checkbox" ? checked : value }); // ← handles checkbox
+    setForm({ ...form, [name]: type === "checkbox" ? checked : value });
   };
 
   const handleImageUpload = async (e) => {

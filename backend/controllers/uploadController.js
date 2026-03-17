@@ -51,7 +51,7 @@ export const uploadImage = asyncHandler(async (req, res) => {
 
   for (const file of req.files) {
     try {
-      // Try Cloudinary first
+      
       if (
         process.env.CLOUDINARY_CLOUD_NAME &&
         process.env.CLOUDINARY_API_KEY &&
@@ -76,13 +76,13 @@ export const uploadImage = asyncHandler(async (req, res) => {
       }
     } catch (err) {
       console.error("Upload failed for:", file.originalname, err);
-      uploadedUrls.push("/images/placeholder.jpg"); // fallback image
+      uploadedUrls.push("/images/placeholder.jpg"); 
     }
   }
 
   res.json({
     success: true,
     message: "Images uploaded successfully",
-    urls: uploadedUrls, // ← returns array of URLs (perfect for AddProduct.jsx)
+    urls: uploadedUrls, 
   });
 });

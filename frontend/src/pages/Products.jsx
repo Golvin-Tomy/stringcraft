@@ -62,7 +62,7 @@ const Products = () => {
           order,
         });
 
-        // ← only add if not empty/All, and lowercase to match DB
+        
         if (filters.category && filters.category !== "All")
           params.append("category", filters.category.toLowerCase());
         if (filters.brand && filters.brand !== "All")
